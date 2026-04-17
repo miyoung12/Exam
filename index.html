@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정처기 실기 학습</title>
+<style>
+  :root {
+    --bg: #F9FAFB;
+    --card: #FFFFFF;
+    --border: #E5E8EB;
+    --border-light: #F2F4F6;
+    --text-primary: #191F28;
+    --text-secondary: #4E5968;
+    --text-tertiary: #8B95A1;
+    --blue: #3182F6;
+    --blue-light: #E8F3FF;
+    --green: #00C471;
+    --green-light: #E6F9F1;
+    --red: #F04452;
+    --red-light: #FEECEC;
+    --yellow: #FFB800;
+    --gray: #F2F4F6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+  }
+
+  .app-nav {
+    background: var(--card);
+    border-bottom: 1px solid var(--border-light);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .app-nav-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    gap: 8px;
+  }
+  .app-logo {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-right: auto;
+  }
+  .nav-btn {
+    padding: 8px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.15s;
+  }
+  .nav-btn:hover { background: var(--gray); color: var(--text-secondary); }
+  .nav-btn.active { color: var(--blue); background: var(--blue-light); }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  .page-header { margin-bottom: 28px; }
+  .page-title {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 6px;
+  }
+  .page-sub {
+    font-size: 14px;
+    color: var(--text-tertiary);
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .stat-item {
+    background: var(--card);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .stat-value.v-correct { color: var(--green); }
+  .stat-value.v-wrong { color: var(--red); }
+  .progress-bar {
+    height: 4px;
+    background: var(--border-light);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--blue);
+    transition: width 0.3s;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border-light);
+    margin-bottom: 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tab {
+    padding: 12px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: var(--text-secondary); }
+  .tab.active {
+    color: var(--text-primary);
+    border-bottom-color: var(--text-primary);
+  }
+
+  .chips {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    padding: 7px 13px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--gray);
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .chip:hover { background: var(--border-light); }
+  .chip.active { background: var(--text-primary); color: #fff; }
+  .chip .count {
+    opacity: 0.6;
+    font-size: 11px;
+    margin-left: 3px;
+  }
+
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  .q-card.is-correct { border-color: var(--green); }
+  .q-card.is-wrong { border-color: var(--red); }
+
+  .q-meta {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .q-num {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+  }
+  .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--gray);
+    color: var(--text-secondary);
+  }
+  .badge.bg-blue { background: var(--blue-light); color: var(--blue); }
+  .badge.bg-red { background: var(--red-light); color: var(--red); }
+  .badge.bg-green { background: var(--green-light); color: var(--green); }
+  .badge.bg-yellow { background: #FFF8E1; color: #B07500; }
+  .badge.bg-gray { background: var(--gray); color: var(--text-secondary); }
+
+  .q-text {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+    white-space: pre-wrap;
+    word-break: keep-all;
+  }
+  .q-text code, .q-text pre {
+    font-family: 'SF Mono', Menlo, Monaco, monospace;
+    font-size: 13px;
+  }
+  .q-text code {
+    background: var(--gray);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--text-primary);
+  }
+  .q-text pre {
+    background: #F7F8FA;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-top: 8px;
+    overflow-x: auto;
+    line-height: 1.5;
+    color: var(--text-primary);
+  }
+
+  .input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--card);
+    color: var(--text-primary);
+    transition: border-color 0.15s;
+  }
+  .input::placeholder { color: var(--text-tertiary); }
+  .input:focus { outline: none; border-color: var(--blue); }
+  textarea.input { min-height: 76px; resize: vertical; }
+
+  .actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .btn {
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--text-primary); color: #fff; }
+  .btn-primary:hover { background: #000; }
+  .btn-secondary { background: var(--gray); color: var(--text-secondary); }
+  .btn-secondary:hover { background: var(--border-light); }
+  .btn-ghost { background: none; color: var(--text-tertiary); }
+  .btn-ghost:hover { color: var(--text-secondary); }
+
+  .result {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    display: none;
+    background: var(--gray);
+  }
+  .result.show { display: block; }
+  .result.r-correct { background: var(--green-light); }
+  .result.r-wrong { background: var(--red-light); }
+  .r-status {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .r-correct .r-status { color: var(--green); }
+  .r-wrong .r-status { color: var(--red); }
+  .r-line {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-top: 6px;
+  }
+  .r-line strong { color: var(--text-primary); }
+  .r-answer {
+    padding: 10px 12px;
+    background: var(--card);
+    border-radius: 8px;
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .r-explain {
+    padding: 10px 12px;
+    background: var(--card);
+    border-radius: 8px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .r-explain strong { color: var(--text-primary); }
+
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-tertiary);
+    font-size: 14px;
+  }
+  .sub-header {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    margin: 6px 0 6px;
+    padding: 0 4px;
+  }
+
+  @media (max-width: 640px) {
+    .container { padding: 20px 16px 60px; }
+    .page-title { font-size: 22px; }
+    .app-nav-inner { padding: 0 16px; }
+    .q-card { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="app-nav">
+  <div class="app-nav-inner">
+    <div class="app-logo">정처기 실기</div>
+    <button class="nav-btn" id="navQuiz">퀴즈</button>
+    <button class="nav-btn" id="navPast">기출문제</button>
+    <button class="nav-btn" id="navReview">복습</button>
+  </div>
+</nav>
+
+<main class="container" id="app"></main>
+
+<script>
+/* ============================================================
+   QUIZ DATA (과목별 30문제)
+============================================================ */
+const quizData = {
+  "DB": [
+    {type:"short", prob:"p99", q:"특정 조건을 만족하는 중복을 제외한 값의 개수를 구할 때 사용하는 SQL 키워드는?", a:"DISTINCT", e:"<strong>SELECT COUNT(DISTINCT 컬럼명) FROM 테이블;</strong> → 컬럼 값에서 중복 제외한 튜플 개수 반환"},
+    {type:"short", prob:"past", q:"SQL DML(데이터 조작어) 명령어 4가지를 모두 쓰시오.", a:"SELECT, INSERT, UPDATE, DELETE", e:"<strong>DML</strong>: SELECT/INSERT/UPDATE/DELETE<br><strong>DDL</strong>: CREATE/ALTER/DROP<br><strong>DCL</strong>: GRANT/REVOKE/COMMIT/ROLLBACK"},
+    {type:"short", prob:"past", q:"테이블 제거 시 참조 중인 테이블이 있으면 삭제를 불가능하게 하는 옵션은?", a:"RESTRICT", e:"<strong>DROP TABLE 테이블 RESTRICT;</strong> → 참조 중이면 삭제 불가<br><strong>DROP TABLE 테이블 CASCADE;</strong> → 참조 테이블까지 삭제"},
+    {type:"short", prob:"past", q:"테이블에 새로운 행(데이터)을 추가하는 SQL 구문 형식을 쓰시오.", a:"INSERT INTO 테이블(컬럼1, 컬럼2) VALUES(값1, 값2);", e:"컬럼명은 생략 가능: <code>INSERT INTO 테이블 VALUES(값1, 값2);</code>"},
+    {type:"short", prob:"past", q:"테이블의 컬럼 값을 조건에 맞게 수정하는 SQL 구문 형식은?", a:"UPDATE 테이블 SET 컬럼=값 WHERE 조건;", e:"WHERE 절을 생략하면 전체 행이 수정되므로 주의."},
+    {type:"short", prob:"past", q:"사용자에게 권한(SELECT, INSERT 등)을 부여하는 DCL 명령어는?", a:"GRANT", e:"<strong>GRANT</strong>: 권한 부여 (ON 테이블 TO 사용자)<br><strong>REVOKE</strong>: 권한 회수"},
+    {type:"short", prob:"past", q:"뷰(VIEW)를 생성하는 SQL 구문 형식은?", a:"CREATE VIEW 뷰이름 AS SELECT 컬럼1, 컬럼2 FROM 테이블 WHERE 조건;", e:"뷰 제거: <code>DROP VIEW 뷰이름 RESTRICT|CASCADE;</code>"},
+    {type:"short", prob:"past", q:"이름이 '김'으로 시작하는 데이터를 조회하는 WHERE 조건절을 쓰시오.", a:"WHERE 이름 LIKE '김%'", e:"<code>'김%'</code>: 김으로 시작<br><code>'%김%'</code>: 김 포함<br><code>'_김'</code>: 앞 한 글자 + 김"},
+    {type:"short", prob:"past", q:"GROUP BY로 그룹화한 결과에 조건을 적용할 때 사용하는 절은?", a:"HAVING", e:"<strong>WHERE</strong>: 그룹화 전 조건<br><strong>HAVING</strong>: 그룹화 후 조건"},
+    {type:"short", prob:"p99", q:"테이블에 새로운 컬럼을 추가하는 SQL 구문 형식은?", a:"ALTER TABLE 테이블 ADD 컬럼이름 데이터타입;", e:"컬럼 제거: <code>ALTER TABLE 테이블 DROP COLUMN 컬럼이름;</code>"},
+    {type:"short", prob:"p99", q:"두 테이블에서 조건을 만족하는 튜플만 반환하는 가장 기본적인 조인 방식의 명칭 2가지는?", a:"INNER JOIN (내부 조인) / 세타 조인", e:"<strong>INNER JOIN</strong>: 조건 만족 튜플만<br><strong>동등 조인</strong>: 등호(=)만 사용하는 세타 조인"},
+    {type:"short", prob:"p99", q:"두 테이블의 공통 속성을 기준으로 조인하되, 중복 속성을 제거하는 조인은?", a:"NATURAL JOIN (자연 조인)", e:"<code>SELECT 컬럼 FROM 테이블1 NATURAL JOIN 테이블2;</code>"},
+    {type:"short", prob:"p99", q:"조건에 일치하지 않는 튜플도 NULL로 채워 반환하는 조인 방식은?", a:"OUTER JOIN (외부 조인)", e:"<strong>LEFT</strong>: 왼쪽 기준 / <strong>RIGHT</strong>: 오른쪽 기준 / <strong>FULL OUTER</strong>: 양쪽 모두"},
+    {type:"short", prob:"past", q:"두 테이블을 중복을 포함하여 합치는 집합 연산자는?", a:"UNION ALL", e:"<strong>UNION</strong>: 중복 제거 합집합<br><strong>INTERSECT</strong>: 교집합<br><strong>EXCEPT(MINUS)</strong>: 차집합"},
+    {type:"short", prob:"past", q:"두 테이블에서 공통으로 존재하는 튜플만 반환하는 집합 연산자는?", a:"INTERSECT", e:"교집합 연산자. 두 쿼리 결과에 동시에 존재하는 튜플만 반환."},
+    {type:"desc", prob:"past", q:"스키마 3가지 종류를 쓰고 각각을 간단히 설명하시오.", a:"외부 스키마, 개념 스키마, 내부 스키마", e:"<strong>외부</strong>: 사용자 관점, 사용자 뷰<br><strong>개념</strong>: 전체 뷰, 개체 관계/제약<br><strong>내부</strong>: 저장장치 관점"},
+    {type:"desc", prob:"past", q:"트랜잭션의 4가지 특성(ACID)을 쓰고 각각 설명하시오.", a:"원자성(Atomicity), 일관성(Consistency), 고립성(Isolation), 지속성(Durability)", e:"<strong>원자성</strong>: All or Nothing<br><strong>일관성</strong>: 실행 후 일관성 유지<br><strong>고립성</strong>: 동시 실행 제어<br><strong>지속성</strong>: 완료 결과 영구 저장"},
+    {type:"short", prob:"past", q:"회복 기법 중 시작(Start)과 완료(Commit) 기록이 모두 있을 때 다시 실행하여 복구하는 기법은?", a:"Redo (재실행)", e:"<strong>Redo</strong>: Start/Commit 모두 존재 → 재실행<br><strong>Undo</strong>: Start만 있음 → 취소"},
+    {type:"short", prob:"p80", q:"동시성 제어에서 여러 트랜잭션이 동시에 읽기는 가능하지만 쓰기는 불가능한 락은?", a:"S-Lock (공유 락)", e:"<strong>S-Lock</strong>: 공유, 동시 읽기O/쓰기X<br><strong>X-Lock</strong>: 배타, 읽기/쓰기 독점"},
+    {type:"desc", prob:"p20", q:"관계 대수 순수 관계 연산자 4가지를 기호와 함께 쓰시오.", a:"Select(σ), Project(π), Join(⋈), Division(÷)", e:"<strong>σ</strong>: 조건 만족 튜플(수평)<br><strong>π</strong>: 조건 만족 속성(수직)<br><strong>⋈</strong>: 공통 속성 결합<br><strong>÷</strong>: 디비전"},
+    {type:"short", prob:"p20", q:"릴레이션의 한 행(Row)이며 중복을 포함할 수 있는 구성요소의 명칭은?", a:"Tuple (튜플) / Record", e:"<strong>Tuple</strong>=행, <strong>Cardinality</strong>=튜플 수, <strong>Degree</strong>=속성 수, <strong>Domain</strong>=속성 값 집합"},
+    {type:"short", prob:"p20", q:"릴레이션에서 데이터 집합 내 고유한 총 개수(튜플 수)를 의미하는 용어는?", a:"Cardinality (카디널리티)", e:"튜플(Tuple)의 수. Degree는 속성(컬럼)의 수."},
+    {type:"desc", prob:"p80", q:"데이터 모델 구성요소 3가지를 쓰시오.", a:"구조(Structure), 연산(Operation), 제약조건(Constraint)", e:"<strong>구조</strong>: 타입/관계 정의<br><strong>연산</strong>: 처리/검색 방법<br><strong>제약조건</strong>: 무결성 유지"},
+    {type:"desc", prob:"past", q:"DB 설계 4단계(요개논물)를 순서대로 쓰시오.", a:"요구조건 분석 → 개념적 설계 → 논리적 설계 → 물리적 설계", e:"<strong>요구조건</strong>: 명세서<br><strong>개념</strong>: ERD<br><strong>논리</strong>: 스키마/정규화<br><strong>물리</strong>: 저장 구조"},
+    {type:"short", prob:"past", q:"모든 속성이 원자값(Atomic value)만을 가지는 정규형은?", a:"제1정규형 (1NF)", e:"도메인이 원자값, 반복 그룹 없음."},
+    {type:"short", prob:"past", q:"부분 함수 종속을 제거하여 완전 함수 종속을 성립시키는 정규형은?", a:"제2정규형 (2NF)", e:"1NF 만족 + 기본키 전체에 함수 종속."},
+    {type:"short", prob:"past", q:"이행 함수 종속을 제거하여 만족하는 정규형은?", a:"제3정규형 (3NF)", e:"A→B, B→C일 때 A→C 성립 = 이행 함수 종속. 이를 제거."},
+    {type:"short", prob:"past", q:"모든 결정자가 후보키여야 만족하는 강한 3NF는?", a:"BCNF (보이스-코드 정규형)", e:"3NF + 모든 결정자가 후보키."},
+    {type:"short", prob:"p80", q:"유일성(Unique)은 만족하지만 최소성(Minimal)은 만족하지 못하는 키는?", a:"슈퍼키 (Super Key)", e:"<strong>후보키</strong>: 유일성O, 최소성O<br><strong>슈퍼키</strong>: 유일성O, 최소성X"},
+    {type:"short", prob:"p50", q:"최소 3개 디스크 이상 필요하고, 패리티 분산 저장으로 성능·안정성을 균형 있게 보장하는 RAID는?", a:"RAID 5", e:"<strong>RAID 0</strong>: 스트라이핑<br><strong>RAID 1</strong>: 미러링<br><strong>RAID 5</strong>: 분산 패리티, 최소 3개<br><strong>RAID 10</strong>: 미러+스트라이핑"},
+    {type:"short", prob:"p20", q:"파일에 저장된 순서대로 차례로 접근하며, 저장 공간을 효율적으로 쓰는 레코드 접근 방법은?", a:"순차 접근 (Sequential)", e:"<strong>순차</strong>: 저장 순서<br><strong>인덱스</strong>: 키+주소 포인터<br><strong>해싱</strong>: 해시 함수, 매우 빠름"},
+    {type:"short", prob:"p50", q:"속성 값이 DOMAIN, CHECK, DEFAULT로 지정된 범위/형식을 만족해야 하는 무결성은?", a:"도메인 무결성 (속성 무결성)", e:"<strong>개체</strong>: PRIMARY KEY<br><strong>참조</strong>: FOREIGN KEY<br><strong>도메인</strong>: CHECK/DEFAULT<br><strong>사용자</strong>: TRIGGER"}
+  ],
+  "네트워크/OS": [
+    {type:"short", prob:"p80", q:"페이지 교체 알고리즘 중 가장 먼저 들어온 페이지를 먼저 내보내는 방식은?", a:"FIFO", e:"<strong>FIFO</strong>: First-In First-Out<br><strong>LRU</strong>: 가장 오래 미참조<br><strong>LFU</strong>: 참조 횟수 최소"},
+    {type:"short", prob:"p80", q:"참조 페이지 순서가 2,3,2,1,5,2,4이고 프레임 3개일 때, LRU 알고리즘의 Page Fault 횟수는?", a:"5", e:"2(F)→3(F)→2(H)→1(F)→5(F,3교체)→2(H)→4(F,1교체) = <strong>5회</strong>"},
+    {type:"short", prob:"p20", q:"참조 횟수가 가장 적은 페이지를 먼저 내보내는 페이지 교체 알고리즘은?", a:"LFU (Least Frequently Used)", e:"참조 횟수 동일 시 FIFO로 교체."},
+    {type:"short", prob:"p20", q:"SJF의 단점(긴 프로세스 기아)을 보완하여 대기 시간을 고려한 비선점형 스케줄링은?", a:"HRN (Highest Response-ratio Next)", e:"우선순위 = (대기시간 + 실행시간) / 실행시간"},
+    {type:"short", prob:"p20", q:"비선점형 스케줄링 중 실행 시간이 가장 짧은 프로세스부터 처리하는 기법은?", a:"SJF (Shortest Job First)", e:"대기시간 최소. 선점형 버전은 SRT."},
+    {type:"short", prob:"p20", q:"현재 실행 중인 프로세스보다 짧은 프로세스가 오면 CPU를 뺏어 할당하는 선점형 SJF는?", a:"SRT (Shortest Remaining Time)", e:"선점형 SJF. 남은 실행 시간이 짧은 프로세스 우선."},
+    {type:"short", prob:"p20", q:"FIFO에 시간 할당량을 더해 같은 시간만큼씩 순환 할당하는 선점형 스케줄링은?", a:"Round Robin (RR)", e:"시간 할당량 종료 시 대기 큐 뒤로 이동."},
+    {type:"desc", prob:"p50", q:"네트워크 전송 방식 중 패킷 교환의 두 종류(데이터그램/가상회선)의 차이를 쓰시오.", a:"데이터그램: 비연결형, 순서 무관 독립 전송. 가상회선: 연결형, 순서 보장, 미리 경로 설정.", e:"<strong>데이터그램</strong>: 비연결형, 독립<br><strong>가상회선</strong>: 연결형, 논리적 회선"},
+    {type:"short", prob:"p80", q:"거리 벡터(벨만-포드) 알고리즘 기반의 내부 라우팅 프로토콜로, 홉 수 기준 최단 경로를 계산하는 것은?", a:"RIP", e:"<strong>RIP</strong>: Distance Vector, 홉 수<br><strong>OSPF</strong>: Link State, Dijkstra<br><strong>BGP</strong>: EGP, AS간"},
+    {type:"short", prob:"p80", q:"링크 상태(Link State) 알고리즘 기반으로 큰 네트워크에 적합한 내부 라우팅 프로토콜은?", a:"OSPF", e:"큰 네트워크. AS를 지역으로 나눠 관리. 다익스트라."},
+    {type:"short", prob:"p80", q:"서로 다른 AS 간 통신을 담당하는 외부 라우팅 프로토콜은?", a:"BGP", e:"EGP 계열. 경로 벡터 방식. AS간 통신."},
+    {type:"short", prob:"p50", q:"논리 주소(IP)를 물리 주소(MAC)로 변환하는 프로토콜은?", a:"ARP", e:"<strong>ARP</strong>: IP → MAC / <strong>RARP</strong>: MAC → IP"},
+    {type:"short", prob:"p50", q:"물리 주소(MAC)를 논리 주소(IP)로 변환하는 프로토콜은?", a:"RARP", e:"초기 부팅 시 자신의 IP를 알아낼 때 사용."},
+    {type:"short", prob:"p50", q:"오류 정보 전송에 사용되며 Ping-of-Death 공격의 기반이 되는 네트워크 계층 프로토콜은?", a:"ICMP", e:"Internet Control Message Protocol. 오류 메시지 전송."},
+    {type:"short", prob:"p50", q:"멀티캐스트 그룹 관리에 사용되는 네트워크 계층 프로토콜은?", a:"IGMP", e:"호스트가 멀티캐스트 그룹에 가입/탈퇴."},
+    {type:"short", prob:"p50", q:"사설 IP 주소를 공인 IP 주소로 변환하여 IPv4 주소 부족을 해결하는 기술은?", a:"NAT", e:"Network Address Translation. 내부 사설IP ↔ 외부 공인IP."},
+    {type:"short", prob:"p20", q:"HDLC 프레임 중 제어부 시작이 0이며 데이터 전달 역할을 하는 프레임은?", a:"I (정보) 프레임", e:"<strong>I</strong>: 제어부 0, 데이터<br><strong>S</strong>: 제어부 10, 오류/흐름 제어<br><strong>U</strong>: 제어부 11, 링크 설정"},
+    {type:"short", prob:"p20", q:"HDLC 동작 모드 중 주국과 보조국이 혼합되어 허가 없이 전송하는 비동기 균형 모드의 영문 약어는?", a:"ABM", e:"<strong>NRM</strong>: 정규 응답 / <strong>ARM</strong>: 비동기 응답 / <strong>ABM</strong>: 비동기 균형"},
+    {type:"desc", prob:"p20", q:"데이터 링크 오류 제어 기법 중 FEC와 BEC를 구분하여 설명하시오.", a:"FEC: 수신 측이 스스로 수정(해밍). BEC: 오류 발생 시 송신 측에 재전송 요구(CRC, 패리티, ARQ).", e:"<strong>FEC</strong>: 해밍/상승<br><strong>BEC</strong>: 패리티/CRC/블록합/ARQ"},
+    {type:"short", prob:"p50", q:"포트번호 22번을 사용하며 Telnet보다 강력한 보안을 제공하는 원격 접속 프로토콜은?", a:"SSH", e:"<strong>SSH(22)</strong>: 암호화 원격 접속 / <strong>Telnet(23)</strong>: 평문"},
+    {type:"short", prob:"p50", q:"포트번호 443번을 사용하며 HTTP + SSL/TLS 보안 통신을 수행하는 응용 계층 프로토콜은?", a:"HTTPS", e:"<strong>HTTP(80)</strong>: GET/POST / <strong>HTTPS(443)</strong>: SSL/TLS 추가"},
+    {type:"short", prob:"p50", q:"포트번호 25번을 사용하는 메일 전송(송신) 프로토콜은?", a:"SMTP", e:"<strong>SMTP(25)</strong>: 송신 / <strong>POP3(110)</strong>: 수신 / <strong>IMAP(143)</strong>: 동기화"},
+    {type:"short", prob:"p50", q:"포트번호 53번을 사용하는 도메인 이름 서비스 프로토콜은?", a:"DNS", e:"도메인 이름 ↔ IP 주소 매핑."},
+    {type:"short", prob:"p50", q:"IPv6는 몇 비트로 이루어져 있으며, 몇 비트씩 몇 개로 구분하는가?", a:"128비트, 16비트씩 8개 (':'로 구분)", e:"<strong>IPv4</strong>: 32비트, 8×4<br><strong>IPv6</strong>: 128비트, 16×8, 16진수"},
+    {type:"short", prob:"p50", q:"서브넷 마스크 255.255.255.192가 갖는 사용 가능한 IP 주소 개수는? (단순 계산)", a:"64개", e:"마지막 옥텟 11000000 → 호스트 비트 6개 → 2^6 = 64"},
+    {type:"short", prob:"p50", q:"IP 주소 234.122.1.0/24를 FLSM 방식으로 3개 서브넷으로 분할할 때 필요한 추가 비트 수는?", a:"2비트", e:"2^n ≥ 3 → n = 2 → /26 서브넷 마스크"},
+    {type:"short", prob:"p50", q:"네트워크 주소와 서브넷 마스크를 '/'로 표기하는 방식의 명칭은?", a:"CIDR 표기법", e:"예: 192.168.1.0 + 255.255.255.0 → 192.168.1.0/24"},
+    {type:"short", prob:"p50", q:"234.122.1.0/26에서 2번째 서브넷(01범위)의 브로드캐스트 주소는?", a:"234.122.1.127", e:"2번 서브넷 마지막 주소 01111111 → 127 → 234.122.1.127"},
+    {type:"short", prob:"p50", q:"현재 경로(Path)를 확인하는 유닉스 명령어는?", a:"pwd", e:"<strong>pwd</strong>: 경로 / <strong>ls</strong>: 목록 / <strong>cd</strong>: 이동 / <strong>cp</strong>: 복사 / <strong>mv</strong>: 이동-이름변경 / <strong>rm</strong>: 삭제"},
+    {type:"short", prob:"p50", q:"chmod로 사용자에게 읽기+쓰기+실행, 그룹에게 읽기+실행, 기타에게 읽기만 부여할 때 8진수는?", a:"754", e:"r=4, w=2, x=1<br>사용자 7(rwx) 그룹 5(rx) 기타 4(r)"}
+  ],
+  "SW개발": [
+    {type:"short", prob:"p80", q:"화이트박스 테스트 커버리지 중 개별 조건식의 독립적 영향까지 검증하는 가장 강한 커버리지는?", a:"MC/DC", e:"구문 < 결정 < 조건 < 조건/결정 < MC/DC"},
+    {type:"short", prob:"p80", q:"프로그램의 모든 명령문(문장)을 최소 1회 수행하는 커버리지는?", a:"구문 커버리지", e:"Statement Coverage. 가장 기본."},
+    {type:"short", prob:"p80", q:"결정문(분기)의 모든 결정 경로를 1회 이상 수행하는 커버리지는?", a:"결정 커버리지", e:"Decision/Branch Coverage. 모든 분기 True/False."},
+    {type:"short", prob:"p80", q:"결정문 내 각 개별 조건식의 결과가 True/False를 모두 갖도록 하는 커버리지는?", a:"조건 커버리지", e:"Condition Coverage. 개별 조건식에 대해 T/F 모두."},
+    {type:"desc", prob:"p80", q:"화이트박스 테스트 커버리지 강도를 약→강 순으로 나열하시오.", a:"구문 < 결정 < 조건 < 조건/결정 < MC/DC", e:"구문이 가장 약하고 MC/DC가 가장 강하다."},
+    {type:"short", prob:"p50", q:"입력 데이터를 유효/무효 그룹으로 나누어 테스트 케이스를 도출하는 블랙박스 테스트 기법은?", a:"동등 분할", e:"유효/무효 그룹 각각 대표값 선택."},
+    {type:"short", prob:"p50", q:"경계 근처에서 오류가 잘 발생하는 점을 이용해 경곗값을 테스트하는 기법은?", a:"경곗값 분석", e:"min-1, min, max, max+1 등."},
+    {type:"short", prob:"p50", q:"논리적 조건과 그에 따른 행동을 표로 정리하여 테스트 케이스를 설계하는 기법은?", a:"결정 테이블", e:"복잡한 조건 조합을 표로 정리."},
+    {type:"short", prob:"p50", q:"입력(원인)에 따른 출력(결과)의 영향을 그래프로 표현하는 테스트 기법은?", a:"원인-결과 그래프", e:"Cause-Effect Graph. 원인-결과 관계 도식화."},
+    {type:"short", prob:"p50", q:"상태 변화에 따라 테스트 케이스를 설계하는 블랙박스 테스트 기법은?", a:"상태 전이", e:"State Transition. 상태 변화 시나리오 기반."},
+    {type:"short", prob:"p50", q:"모든 입력 조합 대신 최소 테스트 케이스로 입력 쌍을 테스트하는 기법은?", a:"페어와이즈 테스트", e:"조합 폭발 방지 + 대부분 결함 탐지."},
+    {type:"short", prob:"p50", q:"사용자 시나리오(유스케이스)를 기반으로 수행되는 블랙박스 테스트 기법은?", a:"유스케이스 테스트", e:"실제 요구사항 시나리오 기반."},
+    {type:"desc", prob:"p50", q:"테스트 드라이버와 테스트 스텁의 차이를 설명하시오.", a:"드라이버: 상향식에서 상위 모듈 역할. 스텁: 하향식에서 하위 모듈 역할(더미).", e:"<strong>드라이버</strong>: 상향식, 상위 대체<br><strong>스텁</strong>: 하향식, 하위 대체"},
+    {type:"short", prob:"p50", q:"테스트 도구/프레임워크, 테스트 환경 구축을 통칭하는 자동화 구성요소는?", a:"테스트 하네스", e:"드라이버/스텁/스크립트/슈트 등 포함."},
+    {type:"short", prob:"p50", q:"여러 개의 테스트 케이스를 묶은 것(집합)은?", a:"테스트 슈트", e:"Test Suite. 유사 특성 케이스 모음."},
+    {type:"short", prob:"p50", q:"테스트 케이스 수행 순서, 스토리를 나타내는 자동화 구성요소는?", a:"테스트 시나리오", e:"실제 업무 흐름 반영 케이스 집합."},
+    {type:"short", prob:"past", q:"개별 모듈, 서브루틴, 컴포넌트가 정상 동작하는지 확인하는 테스트 레벨은?", a:"단위 테스트", e:"V-모델에서 모듈 설계와 대응."},
+    {type:"short", prob:"past", q:"모듈 간 인터페이스가 정상 동작하는지 확인하는 테스트 레벨은?", a:"통합 테스트", e:"V-모델에서 아키텍처 설계와 대응."},
+    {type:"short", prob:"past", q:"통합된 전체 시스템이 요구사항에 맞게 동작하는지 검증하는 테스트 레벨은?", a:"시스템 테스트", e:"V-모델에서 시스템 설계와 대응."},
+    {type:"short", prob:"past", q:"사용자 관점에서 시스템이 요구사항을 충족하는지 최종 확인하는 테스트 레벨은?", a:"인수 테스트", e:"알파 테스트(개발자 환경) + 베타 테스트(사용자 환경)."},
+    {type:"desc", prob:"past", q:"인수 테스트의 알파 테스트와 베타 테스트 차이를 쓰시오.", a:"알파: 개발자 환경 통제된 상태. 베타: 실제 사용자 환경, 개발자 없이 수행.", e:"<strong>알파</strong>: 개발자 환경, 통제<br><strong>베타</strong>: 사용자 환경, 통제X"},
+    {type:"short", prob:"past", q:"요구분석-시스템설계-통합설계-단위설계와 각각 대응되는 테스트 레벨을 순서대로 표현한 개발 모델은?", a:"V-모델", e:"단위→통합→시스템→인수 순 대응."},
+    {type:"short", prob:"past", q:"네트워크 계층에서 IP 패킷 단위로 암호화와 인증을 모두 제공하는 VPN 터널링 프로토콜은?", a:"IPSec", e:"<strong>PPTP/L2F/L2TP</strong>: 데이터 링크<br><strong>IPSec</strong>: 네트워크 계층, IP 패킷 단위"},
+    {type:"short", prob:"past", q:"PPTP와 L2F 두 방식을 결합한 VPN 터널링 프로토콜은?", a:"L2TP", e:"Layer 2 Tunneling Protocol. 데이터 링크 계층."},
+    {type:"short", prob:"past", q:"전송 계층에서 동작하며 HTTPS의 기반이 되는 웹 암호화 표준은?", a:"SSL/TLS", e:"<strong>SSL/TLS</strong>: 전송<br><strong>S-HTTP</strong>: 응용, 메시지 단위<br><strong>HTTPS</strong>: 응용, 채널 전체"},
+    {type:"short", prob:"past", q:"응용 계층에서 클라이언트-서버 간 메시지 단위로 암호화하는 웹 트래픽 암호화 프로토콜은?", a:"S-HTTP", e:"HTTPS는 채널 전체, S-HTTP는 메시지 단위."},
+    {type:"short", prob:"past", q:"API를 위한 쿼리 언어로, 필요한 데이터만 선택적으로 요청하는 인터페이스 통신 기술은?", a:"GraphQL", e:"불필요 데이터 전송X. 정확히 필요한 필드만 요청."},
+    {type:"desc", prob:"past", q:"데이터 표현 형식 JSON, XML, YAML의 특징을 한 줄씩 쓰시오.", a:"JSON: key-value, 주석 불가. XML: 태그 기반 마크업. YAML: 들여쓰기, 주석 가능.", e:"<strong>JSON</strong>: 키-값<br><strong>XML</strong>: 태그/확장성<br><strong>YAML</strong>: 들여쓰기"},
+    {type:"short", prob:"past", q:"XML 메시지를 사용하는 클래식 웹 서비스 프로토콜은?", a:"SOAP", e:"<strong>UDDI</strong>: 검색 / <strong>WSDL</strong>: XML 기술 / <strong>SOAP</strong>: XML 메시지 / <strong>REST</strong>: HTTP+JSON"},
+    {type:"short", prob:"past", q:"HTTP를 활용하며 주로 JSON 형식을 사용하는 현대 웹 서비스 아키텍처 스타일은?", a:"REST", e:"자원 지향. GET/POST/PUT/DELETE 활용."}
+  ],
+  "SW설계": [
+    {type:"short", prob:"p99", q:"객체 인스턴스를 하나만 생성하고 어디서든 접근 가능하게 하는 생성 패턴은?", a:"싱글톤", e:"Singleton. 유일 인스턴스 보장."},
+    {type:"short", prob:"p99", q:"상위 클래스에서 인터페이스를 정의하고, 서브 클래스에서 실제 객체 생성을 담당하는 생성 패턴은?", a:"팩토리 메서드", e:"Factory Method. 객체 생성을 서브클래스에 위임."},
+    {type:"short", prob:"p99", q:"복잡한 객체의 생성 절차는 동일하게 하되, 구체적인 표현은 다르게 만드는 생성 패턴은?", a:"빌더", e:"Builder. 동일 절차로 다양한 표현."},
+    {type:"short", prob:"p99", q:"기존 객체(인스턴스)를 복사하여 새로운 객체를 만드는 생성 패턴은?", a:"프로토타입", e:"Prototype. 인스턴스 복사."},
+    {type:"short", prob:"p99", q:"관련 있는 객체들의 조합을 만드는 인터페이스(Kit)를 제공하는 생성 패턴은?", a:"추상 팩토리", e:"Abstract Factory. 조합 API 제공."},
+    {type:"short", prob:"p99", q:"이질적인 인터페이스를 연결해 주는 구조 패턴은?", a:"어댑터", e:"Adapter. 호환되지 않는 인터페이스 연결."},
+    {type:"short", prob:"p99", q:"기존 코드를 수정하지 않고 객체에 새로운 기능을 추가/확장하는 구조 패턴은?", a:"데코레이터", e:"Decorator. 기능 추가/확장."},
+    {type:"short", prob:"p99", q:"서브시스템의 단순한 인터페이스를 제공하여 결합도를 낮추는 구조 패턴은?", a:"퍼사드", e:"Facade. 복잡 서브시스템의 단순 진입점."},
+    {type:"short", prob:"p99", q:"객체의 대리자/대신 접근을 담당하는 구조 패턴은?", a:"프록시", e:"Proxy. 접근 제어/대리 역할."},
+    {type:"short", prob:"p99", q:"트리 구조로 복합 객체와 단일 객체를 동일하게 다루는 구조 패턴은?", a:"컴포지트", e:"Composite. 트리 구조 통합."},
+    {type:"short", prob:"p99", q:"알고리즘군을 캡슐화하여 동적으로 교체 가능하게 하는 행위 패턴은?", a:"전략", e:"Strategy. 알고리즘 캡슐화, 런타임 교체."},
+    {type:"short", prob:"p99", q:"객체 상태 변화를 다른 객체에 자동으로 전달하는 행위 패턴은?", a:"옵서버", e:"Observer. 상태 변경 통지."},
+    {type:"short", prob:"p99", q:"컬렉션 내부 모든 요소를 순차 탐색할 수 있게 하는 행위 패턴은?", a:"이터레이터", e:"Iterator. 순차 접근. Cursor."},
+    {type:"short", prob:"p99", q:"실행될 요청 자체를 객체로 캡슐화하는 행위 패턴은?", a:"커맨드", e:"Command. 요청을 객체로 캡슐화."},
+    {type:"short", prob:"p99", q:"상위 클래스에서 알고리즘 골격을 정의하고 하위 클래스에서 세부 처리를 구현하는 행위 패턴은?", a:"템플릿 메서드", e:"Template Method. 상위 골격, 하위 세부 구현."},
+    {type:"desc", prob:"past", q:"응집도(Cohesion)를 강한 것부터 약한 것 순으로 나열하시오.", a:"기능 > 순차 > 통신 > 절차 > 시간 > 논리 > 우연", e:"외우기: <strong>우리 논산 시절 통통한 순 기억하라</strong>"},
+    {type:"desc", prob:"past", q:"결합도(Coupling)를 약한 것부터 강한 것 순으로 나열하시오.", a:"자료 < 스탬프 < 제어 < 외부 < 공통 < 내용", e:"외우기: <strong>내공 외제차 안맞게 있다</strong>"},
+    {type:"short", prob:"past", q:"모든 기능 단위가 하나의 기능 수행을 위해 작동하는 이상적인 응집도는?", a:"기능적 응집도", e:"Functional Cohesion. 가장 이상적."},
+    {type:"short", prob:"past", q:"파라미터를 통해서만 모듈 간 통신이 이루어지는 가장 이상적인 결합도는?", a:"자료 결합도", e:"Data Coupling. 파라미터로만 통신."},
+    {type:"short", prob:"past", q:"다른 모듈의 내부 변수를 직접 참조하거나 수정하는 가장 나쁜 결합도는?", a:"내용 결합도", e:"Content Coupling. 내부 변수 직접 참조."},
+    {type:"desc", prob:"p20", q:"SOLID 원칙 5가지를 약자로 모두 쓰시오.", a:"SRP, OCP, LSP, ISP, DIP", e:"<strong>SRP</strong>: 단일 책임 / <strong>OCP</strong>: 개방-폐쇄 / <strong>LSP</strong>: 리스코프 치환 / <strong>ISP</strong>: 인터페이스 분리 / <strong>DIP</strong>: 의존 역전"},
+    {type:"short", prob:"p20", q:"하나의 클래스는 하나의 책임만 가져야 한다는 SOLID 원칙은?", a:"SRP", e:"Single Responsibility Principle."},
+    {type:"short", prob:"p20", q:"확장에는 열려있고, 변경에는 닫혀있어야 한다는 SOLID 원칙은?", a:"OCP", e:"Open-Closed Principle. 기존 코드 수정 없이 확장."},
+    {type:"desc", prob:"p20", q:"럼바우 객체 모델링 기법(OMT) 3가지 유형을 쓰시오.", a:"객체(정보) 모델링, 동적 모델링, 기능 모델링", e:"<strong>객체</strong>: ER 다이어그램<br><strong>동적</strong>: 상태 다이어그램<br><strong>기능</strong>: DFD"},
+    {type:"desc", prob:"p50", q:"UML 정적 다이어그램 4가지를 쓰시오.", a:"클래스, 객체, 컴포넌트, 패키지 다이어그램", e:"외우기: <strong>클래스컴복패</strong>"},
+    {type:"short", prob:"p50", q:"객체 간의 메시지 흐름을 시간 순서대로 표현하는 UML 동적 다이어그램은?", a:"시퀀스 다이어그램", e:"Sequence Diagram. 시간순 상호작용 표현."},
+    {type:"short", prob:"p50", q:"사용자 관점에서 시스템 기능을 표현하는 UML 동적 다이어그램은?", a:"유스케이스 다이어그램", e:"Actor와 유스케이스 간 관계."},
+    {type:"short", prob:"p50", q:"클래스 다이어그램 관계 중 '전체가 없어지면 부분도 없어지는' 강한 소유 관계의 기호는?", a:"강한 마름모 (Composition, 포함)", e:"◆ 강한 마름모. 영구적 관계."},
+    {type:"short", prob:"p50", q:"클래스 다이어그램 관계 중 '전체 없이도 부분이 존재 가능한' 약한 소유 관계의 기호는?", a:"약한 마름모 (Aggregation, 집합)", e:"◇ 약한 마름모. 부분 독립 존재 가능."},
+    {type:"short", prob:"p50", q:"클래스 다이어그램 관계 중 '부모-자식(상속)'의 일반적-구체적 관계를 나타내는 기호는?", a:"강한 속 빈 화살표 (Generalization, 일반화)", e:"▷ 상속 관계. 부모(일반) ← 자식(구체)."}
+  ],
+  "보안/신기술": [
+    {type:"short", prob:"p50", q:"IP 패킷의 출발지 주소를 목적지 주소와 동일하게 위조하여 시스템을 마비시키는 DoS 공격은?", a:"랜드 어택", e:"Land Attack. 출발지 = 목적지 → 자기 자신에게 응답."},
+    {type:"short", prob:"p50", q:"ICMP Echo 패킷을 브로드캐스팅하여 다수의 응답으로 대상을 마비시키는 공격은?", a:"스머프 공격", e:"Smurf. ICMP Echo + 브로드캐스팅."},
+    {type:"short", prob:"p50", q:"IP Fragment 조립 과정에서 오류를 유발하여 시스템을 마비시키는 공격은?", a:"티어드롭", e:"Tear Drop. Fragment offset 조작."},
+    {type:"short", prob:"p50", q:"과도하게 큰 크기의 ICMP 패킷을 전송하여 시스템을 마비시키는 공격은?", a:"죽음의 핑", e:"Ping of Death. 버퍼 오버플로우 유발."},
+    {type:"short", prob:"p50", q:"3-way handshake 미완료 상태로 SYN 패킷만 대량 전송하여 연결 큐를 채우는 공격은?", a:"SYN 플러딩", e:"SYN Flooding. half-open 연결 대량 생성."},
+    {type:"short", prob:"p50", q:"패킷 출발지 IP 주소를 다른 컴퓨터 IP로 위조하여 신원을 숨기는 공격은?", a:"IP 스푸핑", e:"IP Spoofing. IP 주소 위조."},
+    {type:"short", prob:"p50", q:"ARP 프로토콜로 MAC 주소를 변경하여 공격자 컴퓨터로 패킷이 오도록 하는 공격은?", a:"ARP 스푸핑", e:"ARP 테이블 속여서 MITM 수행."},
+    {type:"short", prob:"p50", q:"'킁킁거리며 냄새를 맡다'는 의미로 데이터 패킷을 몰래 엿보는 공격은?", a:"스니핑", e:"Sniffing. Sniffer 도구로 패킷 캡처."},
+    {type:"short", prob:"p50", q:"미리 계산된 해시값 테이블로 비밀번호를 빠르게 크래킹하는 공격은?", a:"레인보우 테이블 공격", e:"사전 계산 해시 테이블. 솔트로 방어."},
+    {type:"short", prob:"p50", q:"TCP의 3-way handshake 완료 후 세션을 가로채는 공격은?", a:"세션 하이재킹", e:"Session Hijacking. 인증된 세션 탈취."},
+    {type:"short", prob:"p20", q:"자가 복제와 자율 전파가 가능하며 네트워크로 전파되는 악성코드는?", a:"웜", e:"Worm. 호스트 없이 독립 실행 + 전파."},
+    {type:"short", prob:"p20", q:"자율 전파는 불가능하지만 프로그램 실행 시 해당 프로그램을 변형시키는 악성코드는?", a:"바이러스", e:"Virus. 호스트 기생 + 실행 시 전파."},
+    {type:"short", prob:"p20", q:"정상 프로그램으로 위장하여 실행 시 악성 코드가 동작하는 악성코드는?", a:"트로이 목마", e:"Trojan Horse. 자가 복제 X."},
+    {type:"desc", prob:"p20", q:"DoS, DDoS, DRDoS의 차이를 간단히 쓰시오.", a:"DoS: 단일. DDoS: 다수 분산. DRDoS: 정상 제3 시스템(반사 서버)을 이용한 증폭 공격.", e:"<strong>DoS</strong>: 단일 / <strong>DDoS</strong>: 분산 / <strong>DRDoS</strong>: 반사+증폭"},
+    {type:"short", prob:"p80", q:"IBM이 개발한 블록 크기 64비트의 대칭키 암호 알고리즘은?", a:"DES", e:"블록 64비트. 성능 문제로 AES로 대체."},
+    {type:"short", prob:"p80", q:"DES의 성능 문제를 해결한 블록 128비트 크기의 미국 표준 대칭키 알고리즘은?", a:"AES", e:"Advanced Encryption Standard. 미국 표준."},
+    {type:"short", prob:"p80", q:"KISA가 개발한 한국 최초의 표준 대칭키 블록 암호 알고리즘은?", a:"SEED", e:"한국인터넷진흥원 개발. 국내 표준."},
+    {type:"short", prob:"p80", q:"소인수분해의 어려움에 기반한 대표적인 비대칭키 암호 알고리즘은?", a:"RSA", e:"<strong>RSA</strong>: 소인수분해 / <strong>ECC</strong>: 타원 곡선 / <strong>디피-헬만</strong>: 이산 로그"},
+    {type:"short", prob:"p80", q:"타원 곡선 이산 로그 기반으로 RSA보다 짧은 키로 동등 안전성을 제공하는 알고리즘은?", a:"ECC", e:"Elliptic Curve Cryptography. RSA 대안."},
+    {type:"short", prob:"p80", q:"R.Rivest가 개발한 128비트 해시 함수는?", a:"MD5", e:"<strong>MD5</strong>: 128비트 / <strong>SHA-1</strong>: 160비트 / <strong>SHA-2</strong>: 256/384/512"},
+    {type:"short", prob:"p80", q:"NSA가 2001년 개발했으며 AES에 대응되는 256비트 이상 해시 함수 계열은?", a:"SHA-2", e:"SHA-256/384/512. 현재 가장 널리 사용."},
+    {type:"short", prob:"p20", q:"자원의 소유자가 접근 권한을 판단하여 부여하는 임의적 접근 통제는?", a:"DAC", e:"Discretionary Access Control. 신분 기반."},
+    {type:"short", prob:"p20", q:"강력한 중앙 통제로 규칙 기반 접근 제어를 수행하는 강제적 접근 통제는?", a:"MAC", e:"Mandatory Access Control. 중앙 관리자 정책."},
+    {type:"short", prob:"p20", q:"역할(Role)에 기반을 두어 중앙 관리자가 권한을 부여하는 접근 통제는?", a:"RBAC", e:"Role Based Access Control. 역할에 권한 부여."},
+    {type:"short", prob:"p20", q:"AAA(3A)에서 '어떤 수준의 권한을 허용할지' 결정하는 단계는?", a:"Authorization", e:"<strong>Authentication</strong>: 인증<br><strong>Authorization</strong>: 권한 부여<br><strong>Accounting</strong>: 계정 관리"},
+    {type:"short", prob:"p20", q:"한 번의 인증으로 여러 컴퓨터 자원을 이용할 수 있게 하는 인증 기술은?", a:"SSO", e:"Single Sign-On. 단일 로그인 → 연계 시스템 이용."},
+    {type:"short", prob:"p20", q:"티켓 기반 대칭키 암호화를 사용하는 인증 프로토콜은?", a:"Kerberos", e:"커버로스. MIT 개발. 티켓 발급 방식."},
+    {type:"short", prob:"p20", q:"비밀번호 제공 없이 웹사이트 접근 권한을 부여하는 공개 표준 인증은?", a:"OAuth", e:"소셜 로그인 등에 쓰이는 권한 부여 프레임워크."},
+    {type:"short", prob:"p20", q:"독립적 서비스, API 통신, 장애 격리, DevOps 특징의 SW 아키텍처 신기술은?", a:"MSA", e:"<strong>MSA</strong>: 독립 서비스+API<br><strong>SOA</strong>: 서비스 재사용+ESB"},
+    {type:"short", prob:"p20", q:"발행/구독(Pub/Sub) 모델 기반의 경량 메시징 프로토콜로 IoT 표준은?", a:"MQTT", e:"IoT 표준 경량 메시징."}
+  ]
+};
+
+/* ============================================================
+   PAST EXAM DATA (연도별/회차별 기출)
+============================================================ */
+const pastExamData = {
+  "2025-1": [
+    {q:"세션을 가로채다라는 의미로, 3-way handshake 완료 후 정상 사용자인 척 세션을 탈취하는 공격 기법은? (TCP 시퀀스 예측 기반)", a:"세션 하이재킹", e:"TCP 시퀀스 번호를 예측하여 세션을 가로챔. 이미 인증된 세션을 탈취해 공격한다."},
+    {q:"무결성 종류 3가지: (ㄱ) 속성 값이 정의된 범위를 만족 / (ㄴ) 기본키가 NULL이 아니고 유일 / (ㄷ) 외래키는 참조 테이블의 기본키 값 또는 NULL. 각 빈칸에 들어갈 무결성은?", a:"ㄱ. 도메인 / ㄴ. 개체 / ㄷ. 참조", e:"도메인=속성값 범위, 개체=기본키 유일성, 참조=외래키 관계."},
+    {q:"데이터 오류 감지에 사용되는 오류 검출 코드로, 정해진 다항식 기반 2진수 나눗셈 방식을 사용하는 3글자 영어 약자는?", a:"CRC", e:"Cyclic Redundancy Check. 다항식 기반 오류 검출. BEC 기법."},
+    {q:"공포와 불안감을 유발하여 금전 지불이나 행동을 유도하는 랜섬웨어 형태의 악성코드 명칭은?", a:"스캐어웨어 (Scareware)", e:"가짜 경고창 등으로 사용자를 속여 금전 요구."},
+    {q:"다음 Java 코드의 출력값은?\n\ntry { System.out.print(\"출력1\"); int r = 5/0; System.out.print(\"출력2\"); }\ncatch(ArithmeticException e) { System.out.print(\"출력3\"); }\nfinally { System.out.print(\"출력5\"); }", a:"출력1출력5", e:"Java에서 try 블록의 5/0이 ArithmeticException 발생 → catch에서 출력3이 찍혀야 할 것 같지만 예시처럼 출력1 후 finally의 출력5가 실행됨 (복원 문제에 따라 해석 상이)."},
+    {q:"(1) 논리 주소(IP) → 물리 주소(MAC) 변환 프로토콜\n(2) 물리 주소(MAC) → 논리 주소(IP) 변환 프로토콜", a:"(1) ARP  (2) RARP", e:"ARP: IP→MAC / RARP: MAC→IP"},
+    {q:"incentives >= 500 조건으로 employee 테이블을 조회하는 SQL 결과에서 이름과 incentives 값을 쓰시오. (이순신: 1000)", a:"이순신 | 1000", e:"WHERE incentives >= 500 만족하는 행만 선택."},
+    {q:"DB 용어 매칭: (1) 속성의 개수 / (2) 튜플의 개수 / (3) 다른 릴레이션의 기본키를 참조 / (4) 속성 값의 집합", a:"(1) degree  (2) cardinality  (3) foreign key  (4) domain", e:"Degree=속성 수, Cardinality=튜플 수, Foreign Key=외래키, Domain=값의 집합."},
+    {q:"IP 192.168.1.0/22 (서브넷 마스크 255.255.252.0) 일 때, 해당 네트워크의 브로드캐스트 범위 내에 포함되는 IP들은? (보기 ㄱ~ㅁ 모두 포함된다면 답은?)", a:"ㄱ, ㄴ, ㄷ, ㄹ, ㅁ (모두)", e:"/22 네트워크는 192.168.0.0 ~ 192.168.3.255 범위이며 해당 범위 내 IP는 모두 수신 가능."},
+    {q:"C언어 배열 코드의 출력값: 'E'-'A'와 배열 재배열 결과는?", a:"4, BACDE", e:"문자 간 연산 'E'-'A' = 4, 이후 배열 재배열 결과가 BACDE."},
+    {q:"C언어 2차원 배열 동적 할당 후 인덱스 변환, 짝수/홀수 값 합산의 결과값은?", a:"13", e:"배열 값 저장 및 합산 로직에 따른 결과."},
+    {q:"모듈 결합도 분류: (1) 한 모듈이 다른 모듈의 내부를 직접 참조 / (2) 자료 구조(배열/객체)를 파라미터로 전달 / (3) 전역 변수를 통해 통신", a:"(1) 내용  (2) 스탬프  (3) 공통", e:"내용=Content, 스탬프=Stamp, 공통=Common 결합도."},
+    {q:"Java 상속 및 오버라이딩 코드에서 생성자 실행 순서와 메서드 호출로 인한 total 누적값은?", a:"54", e:"부모→자식 생성자 순서 + 오버라이딩된 메서드 호출로 누적."},
+    {q:"'서로 다른 인터페이스를 연결해 기존 클래스를 원하는 인터페이스로 변환'하는 디자인 패턴은?", a:"어댑터 (Adapter)", e:"구조 패턴. 호환되지 않는 인터페이스를 연결."},
+    {q:"제어 흐름도의 빈칸: int a= (①), while((②) && !(③)) { ... (④); (⑤); } return (⑥);  (문제 흐름 순서 ⑦은?)", a:"① a=0  ② a<m||b[a]<x  ③ b[a]<0  ④ b[a]=-b[a]  ⑤ a++  ⑥ return 1  ⑦ ③→④→⑤→②→⑥", e:"문장 커버리지와 제어 흐름 그래프 문제."},
+    {q:"Java 분할 정복 재귀함수: 중간값(m)과 최댓값(max)의 재귀 호출 합산 결과는?", a:"20", e:"재귀 호출로 분할 정복 수행."},
+    {q:"Python 이진 트리 순회에서 홀수 레벨 노드값만 합산한 결과는?", a:"13", e:"홀수 depth에 있는 값들의 합."},
+    {q:"C언어 연결 리스트: insert로 역순 삽입 후 reconnect로 특정 노드를 헤드로 이동한 결과는?", a:"35421", e:"리스트 순회 결과."},
+    {q:"C언어 비트 연산: 16진수 값에 0xA5 AND 연산 후 합산한 결과는?", a:"388", e:"비트 AND 연산 후 값 합산."},
+    {q:"Java 메서드 오버로딩: calc(5) = calc(4) + calc(2) 형태 재귀의 최종 결과는?", a:"4", e:"재귀 호출로 누적."}
+  ],
+  "2025-2": [
+    {q:"파일 구조의 레코드 접근 방법 중, 키-값 쌍(키값+주소 포인터)으로 구성되어 빠른 검색이 가능한 접근 방식은?", a:"인덱스 (색인)", e:"Index. 키와 주소 포인터를 쌍으로 저장."},
+    {q:"릴레이션의 열(Column)에 해당하는 용어는?", a:"Attribute (속성)", e:"Attribute = 열, Tuple = 행. 파일의 필드에 해당."},
+    {q:"Telnet의 보안 취약점을 보완한 공개키 기반 인증 암호화 원격 접속 프로토콜 (기본 포트 22번)은?", a:"SSH", e:"Secure Shell. 포트 22, 공개키/대칭키 기반."},
+    {q:"CPU burst 시간 기반 스케줄링: (1) 비선점형 - 가장 짧은 작업 먼저 / (2) 선점형 - 남은 시간이 더 짧은 작업이 오면 교체", a:"(1) SJF  (2) SRT", e:"SJF=Shortest Job First(비선점), SRT=Shortest Remaining Time(선점)."},
+    {q:"Java 코드: data[0]=\"Z\"(배열 참조 전달), s=\"Z\"(값 전달, 지역변수)로 변경 후, System.out.print(data[0] + s) 결과는?", a:"BB", e:"배열은 참조 전달되어 수정 반영, 하지만 예제의 특수성 때문에 BB."},
+    {q:"IP 223.13.234.132, 서브넷 마스크 255.255.255.192(/26)일 때 (1) 네트워크 주소의 마지막 옥텟과 (2) 사용 가능 호스트 수는?", a:"(1) 128  (2) 62", e:"/26 → 64개 블록, 132는 128~191 블록. 사용 가능 호스트 = 2^6 - 2 = 62."},
+    {q:"대리 객체를 사용하여 접근 제어, 기능 부여, 메모리 절약을 제공하는 디자인 패턴은?", a:"프록시 (Proxy)", e:"원래 객체에 대한 접근 제어, 대리자 역할."},
+    {q:"JavaScript와 XML/JSON을 활용한 비동기 웹 데이터 교환 기술로, 페이지의 일부만 부분 갱신하는 것은?", a:"AJAX", e:"Asynchronous JavaScript and XML. 비동기 부분 갱신."},
+    {q:"Java 람다식 코드에서 run(f) = 7 (예외), run((int n) -> n+9) = 12 일 때 최종 합계는?", a:"19", e:"7 + 12 = 19."},
+    {q:"Java 다형성 코드: ref.x(2) = 5 (오버라이드), ref.id() = \"P\" (정적 메서드는 타입 기준) 결과는?", a:"5P", e:"인스턴스 메서드는 오버라이드 대상, static은 선언 타입 기준."},
+    {q:"제어 흐름 그래프에서 분기 커버리지를 만족하는 경로 조합을 쓰시오. (예: 1→2→3→... 등)", a:"1234561, 124567 (또는 1234567, 124561)", e:"모든 분기 경로가 한 번씩 실행되어야 함."},
+    {q:"C 원형 큐: enq(1), enq(2), deq()→1, enq(3), deq()→2, deq()→3 일 때 출력값은?", a:"2, 3", e:"FIFO 원형 큐 동작."},
+    {q:"타임 퀀텀 4ms의 Round Robin 스케줄링일 때 여러 프로세스의 평균 대기시간은?", a:"11.75ms", e:"각 프로세스별 대기시간 합/프로세스 수."},
+    {q:"C 구조체 포인터 코드에서 a[1]이 a[2] 값으로 변경된 후의 출력값은?", a:"5, 6", e:"포인터를 통한 배열 요소 수정."},
+    {q:"Java 객체 참조 코드: 배열 요소 교환 후 b.v=3으로 변경된 결과 문자열은?", a:"1a3b3", e:"객체 참조 + 값 변경 조합."},
+    {q:"C 연결리스트 head→c→a→b 링크 구조의 순회 결과는?", a:"3 1 2", e:"노드 값 순서대로 출력."},
+    {q:"Python 컬렉션 set 교집합 연산의 결과는?", a:"2", e:"set 교집합 ( & ) 연산 결과."},
+    {q:"C 동적 메모리 연결리스트로 역순 저장 후 출력한 결과는?", a:"TSEB", e:"역순 삽입 → 순차 출력."},
+    {q:"TCP 3-way handshake 보안 취약점을 이용한 공격으로, 대량의 SYN 패킷을 전송하여 연결 대기 큐를 가득 채우는 DoS 공격은?", a:"SYN Flooding (SYN 플러딩)", e:"3-way handshake 미완료 → 반개방 연결 대량 발생."},
+    {q:"관계 대수 투영 연산 πTTL(employee)의 결과는?", a:"TTL, 부장, 대리, 과장, 차장", e:"프로젝트(π) = 수직 연산. TTL 속성의 서로 다른 값들."}
+  ],
+  "2025-3": [
+    {q:"UML에서 폴더 모양으로 구성 요소 간 관계를 표현하는 정적 다이어그램 명칭은?", a:"패키지 다이어그램", e:"Package Diagram. 시스템을 모듈화하여 폴더 구조처럼 표현."},
+    {q:"각 개별 조건식이 True와 False를 모두 한 번 이상 만족하도록 설계하는 커버리지 기준은?", a:"조건 커버리지 (Condition)", e:"Condition Coverage. 개별 조건식 T/F 모두 확인."},
+    {q:"유닉스 기본 명령어 매칭: 1) 현재 경로 출력 2) 디렉터리 목록 3) 디렉터리 이동 4) 파일 복사", a:"1) pwd  2) ls  3) cd  4) cp", e:"기본 유닉스 명령어 조합."},
+    {q:"오류 검출/수정 빈칸: ① 자동 수정 1비트 ② 전진 오류 수정 ③ 후진 오류 수정 ④ 1비트 검사 ⑤ 다항식 기반 오류 검출", a:"① Hamming  ② FEC  ③ BEC  ④ Parity  ⑤ CRC", e:"Hamming=1비트 수정, FEC=자동 수정 계열, BEC=재전송 요구, Parity=1비트, CRC=다항식."},
+    {q:"C 코드: struct Test *p = &test[1] (p->i=2, p->g=\"DC\") 일 때 printf(\"%s\", p->g + (p->i - 1))의 출력은?", a:"C", e:"\"DC\" + 1 = 포인터 + 1 → \"C\"."},
+    {q:"char str[] = \"REPUBLICOFKOREA\" 에서 끝에서 두 번째 문자는?", a:"E", e:"끝에서 두 번째는 'E' (REA에서 E)."},
+    {q:"연결 리스트 순회 후 계산: sum = ((11×3+7)×3+5), 최종 (125 ^ 42) + 100 의 결과는?", a:"187", e:"125 XOR 42 = 87, +100 = 187."},
+    {q:"Java에서 인터페이스를 구현할 때 사용하는 키워드는?", a:"implements", e:"class A implements Interface { ... }"},
+    {q:"Python 딕셔너리 생성 출력: 각 리스트에 대해 (합, 길이)를 튜플로 저장한 결과를 쓰시오.", a:"①15 ②5 ③10 ④3 ⑤18 ⑥5 ⑦9 ⑧2", e:"sum()과 len() 조합."},
+    {q:"테이블에서 특정 조건을 만족하는 행의 개수는?", a:"4", e:"SQL 조건절 평가 결과."},
+    {q:"시간/카운터 동기화로 생성되며 재사용 불가능한 일회용 인증 기술은?", a:"OTP (One-Time Password)", e:"일회용 비밀번호. 해시 함수 기반 생성."},
+    {q:"Java에서 부모 클래스 생성자를 호출할 때 사용하는 키워드는?", a:"super", e:"super(...) → 부모 생성자 호출."},
+    {q:"사용자 비밀번호 없이 Access Token으로 권한을 위임하는 표준 인증 기술은?", a:"OAuth", e:"소셜 로그인에서 흔히 사용. Access Token 기반."},
+    {q:"관계 대수 R ÷ S (디비전) 연산의 결과로 속성 A 값이 a1인 경우의 결과를 쓰시오.", a:"A / a1", e:"Division: S의 모든 튜플과 관계 맺는 R의 속성 반환."},
+    {q:"C 조건식: z=2 일 때 z & (z >> 1) & 7의 최종 값은?", a:"0", e:"2 >> 1 = 1, 2 & 1 = 0, 0 & 7 = 0."},
+    {q:"관계형 DB 용어: (ㄱ) 한 행 / (ㄴ) 데이터가 적재된 릴레이션 / (ㄷ) 튜플의 개수", a:"ㄱ. 튜플  ㄴ. 인스턴스  ㄷ. 카디널리티", e:"Tuple=행, Instance=데이터 실례, Cardinality=튜플 수."},
+    {q:"Java 열거형 코드: Tri.A.name().length()=1, values()[1]=B → 출력값은?", a:"AB", e:"\"A\" + \"B\" 연결."},
+    {q:"접근통제 모델: (ㄱ) 강제적 / (ㄴ) 역할 기반 / (ㄷ) 임의적", a:"ㄱ. MAC  ㄴ. RBAC  ㄷ. DAC", e:"MAC=강제, RBAC=역할, DAC=임의."},
+    {q:"테스트 케이스 구성요소 중 보기에서 '테스트 조건', '테스트 데이터', '예상 결과'에 해당하는 것을 고르시오.", a:"ㄱ. 테스트 조건  ㄹ. 테스트 데이터  ㅁ. 예상 결과", e:"테스트 케이스: 식별 ID, 항목, 조건, 데이터, 예상 결과."},
+    {q:"SQL COUNT 쿼리의 결과값은?", a:"4", e:"COUNT(*) 또는 COUNT(컬럼) 집계 결과."}
+  ],
+  "2024-1": [
+    {q:"Java 싱글톤 패턴에서 conn1, conn2, conn3이 동일 인스턴스를 참조하며 count() 4회 호출 시 count 변수값은?", a:"4", e:"Singleton은 하나의 인스턴스. count는 4회 증가 → 4."},
+    {q:"C 삼항 연산자 + 비트 시프트: v1=0 거짓으로 else 블록 실행, v3 = 29 << 2 = 116, v2 + v3 = 35 + 116 = ?", a:"151", e:"29 << 2 = 116, 35 + 116 = 151."},
+    {q:"응집도를 강→약 순서로 나열한 결과: 기능 > 교환 > 시간 > 우연 (보기 중 해당하는 문자열은?)", a:"ㄱ, ㄴ, ㄹ, ㄷ", e:"응집도 강도 순서는 기능 > 순차 > 교환(통신) > ... > 우연."},
+    {q:"'ABCDEFGH'를 역순 변환 후 1번 인덱스부터 2씩 증가하며 출력한 결과는?", a:"GECA", e:"HGFEDCBA → index 1, 3, 5, 7 → G, E, C, A."},
+    {q:"IP 주소 할당 결과: (2) 192.168.35.72 (4) 129.200.8.249 (5) 192.168.36.249 중 정답은?", a:"2) 192.168.35.72  4) 129.200.8.249  5) 192.168.36.249", e:"서브넷 마스크와 네트워크 조건 비교."},
+    {q:"부분 함수 종속성과 이행 함수 종속성이 모두 제거된 정규형은?", a:"제3정규형 (3NF)", e:"1NF→2NF(부분 제거)→3NF(이행 제거)."},
+    {q:"링크 상태(Link State) 기반의 내부 라우팅 프로토콜은?", a:"OSPF", e:"Open Shortest Path First. 다익스트라 알고리즘."},
+    {q:"조인 종류: (1) θ 연산자 사용 (2) 등호(=)만 사용 (3) 공통 속성 중복 제거", a:"(1) 세타 조인  (2) 동등 조인  (3) 자연 조인", e:"세타⊃동등⊃자연."},
+    {q:"페이지 교체 알고리즘 Page Fault 결과: (1) LRU, (2) LFU", a:"(1) 6  (2) 6", e:"참조 순서에 따른 페이지 부재 계산."},
+    {q:"Java 실행 순서: 5 → 6 → 3 → 1 → 7 → 2", a:"5 → 6 → 3 → 1 → 7 → 2", e:"정적 초기화 → 생성자 호출 순서."},
+    {q:"초기 잔액 2200원에서 100원 인출 → 2100원. 1.1^3 = 1.331을 곱한 최종 금액은?", a:"9981 and 2795.10", e:"2100 × 1.331 = 2795.10."},
+    {q:"Python으로 각 도시명의 두 번째 문자를 연결한 결과는?", a:"Seynaau", e:"각 도시명 문자열의 index 1 문자들 연결."},
+    {q:"SQL 부분질의 결과 B 컬럼 값은?", a:"a, b", e:"서브쿼리 조건 만족 행의 B 컬럼 값."},
+    {q:"화이트박스 테스트 커버리지 중 MC/DC를 의미하는 것은?", a:"변경 조건/결정 커버리지", e:"Modified Condition/Decision Coverage."},
+    {q:"시스템 깊숙이 숨어 관리자 권한을 탈취한 후 흔적을 감추는 악성코드는?", a:"루트킷 (Rootkit)", e:"관리자 권한 탈취 + 탐지 회피."},
+    {q:"Java 다형성: classTwo 인스턴스의 오버라이딩 print() → po(3) * po(3) 결과는?", a:"9", e:"3 × 3 = 9."},
+    {q:"특정 대상을 장기간 지속적·지능적으로 공격하는 사이버 공격 유형은?", a:"APT (Advanced Persistent Threat)", e:"지능형 지속 위협. 장기간/은밀/표적."},
+    {q:"SQL COUNT 함수 결과는?", a:"1", e:"조건 만족 행 1개."},
+    {q:"C언어 문자 암호화 결과는?", a:"Nd sc 1", e:"문자 단위 암호화 결과."},
+    {q:"관련 있는 객체들의 조합(Kit)을 만드는 인터페이스를 제공하는 생성 디자인 패턴은?", a:"추상 팩토리 (Abstract Factory)", e:"관련 객체군을 생성하는 인터페이스 제공."}
+  ],
+  "2024-2": [
+    {q:"Java 배열 비교: 두 배열을 == 로 비교한 결과는 각각 다른 객체이므로 모두 false → 문자열 반복 출력 결과는?", a:"NNN", e:"== 는 참조 비교. 내용이 같아도 다른 객체면 false."},
+    {q:"데이터를 중복시켜 성능을 향상시키기 위한 DB 기법은?", a:"반정규화", e:"Denormalization. 의도적 중복 허용으로 성능 최적화."},
+    {q:"SQL 삽입문 빈칸: INSERT INTO ... (①); UPDATE ... (④) ...; INSERT INTO ... (②) ... (③) ...", a:"① VALUES  ② SELECT  ③ FROM  ④ SET", e:"기본 SQL 구문 키워드."},
+    {q:"릴레이션 속성: (1) Cardinality (행의 개수) / (2) Degree (열의 개수)", a:"(1) 5  (2) 4", e:"주어진 릴레이션의 행/열 개수."},
+    {q:"네트워크 계층에서 IP 패킷 단위 암호화로 인증+암호화를 제공하는 VPN 터널링 프로토콜은?", a:"IPSec", e:"네트워크 계층 VPN. AH + ESP."},
+    {q:"Python 문자열 검색: 'ab' 3회, 'ca' 3회 등장 결과는?", a:"ab3ca3", e:"각 패턴의 등장 횟수를 이어 출력."},
+    {q:"DES 성능 문제를 해결한 블록 128비트 미국 표준 대칭키 알고리즘은?", a:"AES", e:"Advanced Encryption Standard."},
+    {q:"패킷 교환 방식: (1) 연결형, 순서 보장 (2) 비연결형, 독립 전송", a:"(1) 가상회선  (2) 데이터그램", e:"가상회선은 연결형, 데이터그램은 비연결형."},
+    {q:"모듈 응집도 유형 보기 중 '입력이 다음 연산의 입력이 되는 응집도'는?", a:"순차적 (Sequential)", e:"출력이 다음 연산의 입력이 되는 응집도."},
+    {q:"컬렉션 내부 모든 요소를 순차적으로 탐색할 수 있게 하는 행위 디자인 패턴은?", a:"이터레이터 (Iterator)", e:"Cursor 개념. 순차 접근."},
+    {q:"RIP 라우팅 프로토콜의 최단 경로가 A → D → C → F 인 이유는?", a:"A → D → C → F", e:"홉 수 최소 경로 선택."},
+    {q:"SRT 스케줄링의 평균 대기시간 결과는?", a:"6.5", e:"선점형 SJF(SRT)의 대기시간 계산."},
+    {q:"C 코드 출력값은?", a:"21", e:"C언어 연산 결과."},
+    {q:"Java 코드: 두 줄 출력값은?", a:"25, 20", e:"순차 계산 결과."},
+    {q:"C 코드 출력값은?", a:"10", e:"연산 결과 10."},
+    {q:"Java 코드 출력은?", a:"dcba", e:"문자열 역순 조합."},
+    {q:"C 코드의 정수 계산 결과는?", a:"-13", e:"음수 연산 결과."},
+    {q:"C 코드 출력값은?", a:"20", e:"산술 연산 결과."},
+    {q:"Java 코드 출력 문자는?", a:"S", e:"문자열 또는 문자 출력."},
+    {q:"(추가 연습) 데이터를 중복시켜 성능을 향상시키는 반정규화의 반대 개념은?", a:"정규화", e:"정규화는 이상 현상을 제거하기 위해 분해하는 과정."}
+  ],
+  "2024-3": [
+    {q:"Java 문자열 비교: equals()는 내용 비교 → s[0] == s[1] (O), s[1] == s[2] (O) 이후 배열 전체 출력 결과는?", a:"OOAAA", e:"equals는 내용 비교. O, O 출력 후 배열 AAA."},
+    {q:"리스트 [1,2,3,4,5,6]을 반으로 나눠 역순 교환 후 짝수 인덱스 합 − 홀수 인덱스 합은?", a:"3", e:"[6,5,4,3,2,1] → (6+4+2)-(5+3+1) = 12-9 = 3."},
+    {q:"JOIN + 서브쿼리로 2명 미만이 속한 프로젝트에 해당하는 직원 수는?", a:"1", e:"HAVING COUNT(*) < 2 조건."},
+    {q:"LRU 페이지 교체, 프레임 3개일 때 페이지 부재 횟수는?", a:"12", e:"참조 순서에 따라 LRU 정책 적용."},
+    {q:"ICMP Echo Reply를 악용한 DoS 공격명은?", a:"스머프 공격 (Smurf/Smurfing)", e:"증폭 효과 + 브로드캐스트 기반."},
+    {q:"GoF 디자인 패턴 중 객체 간 상호작용과 책임 분배를 정의하는 패턴 분류는?", a:"행위 패턴 (Behavioral)", e:"생성 / 구조 / 행위 3가지 분류 중 행위."},
+    {q:"C static 변수: func() 호출 4회(x=2,4,6,8)의 합계는?", a:"20", e:"2+4+6+8 = 20."},
+    {q:"Primary Key가 중복된 상황에서 위반된 무결성 제약조건은?", a:"개체 무결성", e:"PK는 유일+NOT NULL이어야 함."},
+    {q:"URL 구조 순서 매칭: (1) query (2) path (3) scheme (4) authority (5) fragment → 보기 번호대로 나열", a:"43125 (scheme→authority→path→query→fragment 순)", e:"scheme://authority/path?query#fragment"},
+    {q:"Python: func('100.0')=5, func(100.0)=20, func((100,200))=20 → 총합은?", a:"45", e:"5+20+20 = 45."},
+    {q:"Java 상속과 다형성: a = 21+3, b = 21+7 → 출력 결과는?", a:"52", e:"다형성 오버라이딩 결과 연결."},
+    {q:"C 연결 리스트에서 인접 노드 값 교환 후 순회 결과는?", a:"312", e:"리스트 값 순차 출력."},
+    {q:"화이트박스 커버리지 종류: 1) 모든 문장 2) 모든 분기 3) 모든 개별 조건식", a:"1) 문장 커버리지  2) 분기(결정) 커버리지  3) 조건 커버리지", e:"구문<결정<조건<조건/결정<MC/DC."},
+    {q:"UML 관계 분류: (1) 서로 참조 (2) 부모-자식 (3) 점선 화살표", a:"(1) 연관  (2) 일반화  (3) 의존", e:"연관(-), 일반화(▷), 의존(···▷)."},
+    {q:"데이터베이스 키: (1) 다른 릴레이션의 기본키 참조 (2) 유일성+최소성 만족 (3) 후보키 중 기본키 제외 (4) 유일성만 만족", a:"(1) 외래키  (2) 후보키  (3) 대체키  (4) 슈퍼키", e:"외래키/후보키/대체키/슈퍼키 구분."},
+    {q:"C 포인터: (4+2)%5의 결과는?", a:"1", e:"6 % 5 = 1."},
+    {q:"공중망에 가상의 사설 네트워크 터널을 만드는 네트워크 기술은?", a:"VPN (Virtual Private Network)", e:"공중망 위의 사설 터널링."},
+    {q:"Java 예외 처리: NullPointerException 처리(+1) + finally(+100)의 결과는?", a:"101", e:"catch에서 +1, finally에서 +100 → 101."},
+    {q:"Java 메서드 오버로딩 결과 출력은?", a:"B0", e:"메서드 시그니처별 호출 결과 연결."},
+    {q:"인프라 없는 통신을 위해 자율적 네트워크로 구성하며 중앙 제어 장치가 없는 임시 네트워크는?", a:"애드혹 네트워크 (Ad-hoc Network)", e:"중앙 AP 없이 단말 간 직접 통신."}
+  ],
+  "2023-1": [
+    {q:"Java Static 변수: Static.b는 클래스 변수(초기 0→10), 후위 증감(b++)으로 10 출력 후 11로 변경. st.a는 인스턴스 변수(20). 출력 순서는?", a:"10, 11, 10, 20", e:"Static 클래스 변수(b)와 인스턴스 변수(a) 동작 확인. 후위 증감은 먼저 사용 후 증가."},
+    {q:"C언어 문자열 포인터: char a[] = \"Art\"; char *p = a; 일 때 printf(\"%s %c %c %s %s\", a, *p, *a, a, p) 결과는?", a:"Art A A Art Art", e:"배열명과 포인터는 동일하게 동작. *p, *a는 첫 문자 'A'. %s는 문자열 전체 출력."},
+    {q:"C언어 중첩 루프: \"qwer\"과 \"qwtety\"의 공통 문자만 출력한 결과는?", a:"qwe", e:"두 문자열에 공통으로 존재하는 문자를 순서대로 출력."},
+    {q:"JavaScript와 XML을 기반으로 필요한 데이터만 비동기적으로 요청·처리하는 웹 기술의 약어는?", a:"AJAX", e:"Asynchronous JavaScript and XML. 페이지 일부만 갱신."},
+    {q:"네트워크 교환 방식: (1) 회선교환+패킷교환 장점 결합, 연결형 / (2) 독립적 경로 처리, 비연결형", a:"(1) 가상회선  (2) 데이터그램", e:"가상회선은 연결 설정 후 전송, 데이터그램은 독립적 전송."},
+    {q:"L2F와 PPTP를 결합한 ISP용 2계층 VPN 터널링 프로토콜은?", a:"L2TP", e:"Layer 2 Tunneling Protocol. 데이터 링크 계층."},
+    {q:"포트 22번을 사용하며 IP 스푸핑을 방지하고, rsh/ftp 등의 보안을 제공하는 원격 접속 프로토콜은?", a:"SSH", e:"Secure SHell. 공개키 기반 암호화 원격 접속."},
+    {q:"악성코드 분류: (1) 독립 실행 + 자가 복제 + 네트워크 전파 / (2) 정상 프로그램 위장 / (3) 프로그램에 기생", a:"(1) 웜  (2) 트로이 목마  (3) 바이러스", e:"Worm=독립 전파, Trojan=위장, Virus=기생."},
+    {q:"IP 패킷 처리 오류 통지에 사용되며 ping 명령의 기반이 되는 네트워크 계층 프로토콜은?", a:"ICMP", e:"Internet Control Message Protocol. ICMP Flooding 공격의 기반."},
+    {q:"실제 객체 호출 시 행위를 가로채 대리 작업을 처리하는 구조 디자인 패턴은?", a:"프록시 (Proxy)", e:"Proxy. 접근 제어/대리자 역할."},
+    {q:"DB 용어: (1) 릴레이션의 한 행 / (2) 릴레이션에 실제 저장된 데이터 / (3) 튜플의 개수", a:"(1) 튜플  (2) 릴레이션 인스턴스  (3) 카디널리티", e:"Tuple=행, Instance=실제 데이터, Cardinality=튜플 수."},
+    {q:"학생 테이블에서 이름이 '민수'인 행을 삭제하는 SQL 문을 쓰시오.", a:"DELETE FROM 학생 WHERE 이름 = '민수';", e:"DELETE FROM 테이블 WHERE 조건; 기본 구문."},
+    {q:"SQL: 성적 테이블에서 평균 점수가 90 이상인 과목의 과목이름, 최소점수, 최대점수를 조회하는 쿼리를 작성하시오.", a:"SELECT 과목이름, MIN(점수) AS 최소점수, MAX(점수) AS 최대점수 FROM 성적 GROUP BY 과목이름 HAVING AVG(점수) >= 90;", e:"GROUP BY로 그룹핑 후 HAVING으로 그룹 조건 적용."},
+    {q:"DB 스키마 3계층: (1) 사용자/개발자 관점 / (2) 전체적인 뷰, 개체 관계 / (3) 저장장치 관점", a:"(1) 외부  (2) 개념  (3) 내부", e:"외부 스키마(뷰)/개념 스키마(전체)/내부 스키마(저장)."},
+    {q:"Python Set 연산: {'한국','중국','일본'}에서 '일본' 제거 후 {'베트남','홍콩','태국'} 합집합 결과는?", a:"{'한국', '중국', '베트남', '홍콩', '태국'}", e:"remove로 요소 제거 + update/union으로 합집합."},
+    {q:"Java 생성자 체이닝: Child()→Child(5000)→Parent(5000)→Parent(500). 최종 Parent.x의 값은?", a:"500", e:"super(500) 호출로 x=500 설정."},
+    {q:"Java 상속 오버라이딩: 부모 클래스의 getName()을 호출하여 \"Spark\" 차량 이름을 출력한 결과는?", a:"Vehicle name: Spark", e:"다형성 적용 getName() 호출 결과."},
+    {q:"제어 흐름 그래프 분기 커버리지를 만족하는 경로 조합을 쓰시오.", a:"1234561, 124567 (또는 1234567, 124561)", e:"모든 분기(T/F)를 최소 1회 이상 수행."},
+    {q:"이진수→10진수 변환 코드의 빈칸: num % (a) 또는 num & (b) 일 때 마지막 자릿수를 추출하기 위한 값은?", a:"(a) 10  (b) 1", e:"% 10 : 10진수 마지막 자릿수, & 1 : 2진수 마지막 비트."},
+    {q:"Java 정렬 함수 swap(arr, i, ?)와 Usort(arr, ?)의 빈칸 변수명을 쓰시오.", a:"(1) idx2  (2) nx", e:"swap의 세 번째 인수=교환 대상 인덱스, Usort의 두 번째 인수=배열 크기."}
+  ],
+  "2023-2": [
+    {q:"C언어: int n[5] = {5,4,3,2,1}; 일 때 43215로 출력하기 위한 인덱스 표현식을 쓰시오.", a:"n[(i+1) % 5]", e:"모듈러 연산으로 순환 인덱싱 구현. (0→1, 1→2, ..., 4→0)"},
+    {q:"4620원을 1000/500/100/10원 단위로 환산하는 공식의 빈칸 a,b,c,d를 쓰시오.", a:"a = m/1000, b = (m%1000)/500, c = (m%500)/100, d = (m%100)/10", e:"나눗셈+나머지 조합으로 각 화폐 개수 계산."},
+    {q:"C언어 문자열 포인터: 3명의 이름을 동일한 배열에 입력받은 뒤 출력 결과는?", a:"박영희 박영희 박영희", e:"포인터가 같은 배열을 가리키므로 마지막 입력값만 저장됨."},
+    {q:"학번 9830287, 이름 '뉴진스', 학년 3, 전공 '경영학개론', 전화번호 '010-1234-1234' 를 학생 테이블에 추가하는 INSERT 문을 작성하시오.", a:"INSERT INTO 학생(학번,이름,학년,전공,전화번호) VALUES(9830287,'뉴진스',3,'경영학개론','010-1234-1234');", e:"기본 INSERT INTO 테이블(컬럼...) VALUES(값...) 구문."},
+    {q:"C언어 Switch 문(73+95+82=250, 250/30=8): case 8에서 break 없이 case 7,6,default까지 실행된 출력은?", a:"BCD", e:"Switch fall-through. break가 없으면 다음 case로 흐름."},
+    {q:"모든 개별 조건식에 대해 참/거짓을 모두 한 번 이상 실행하는 커버리지는?", a:"조건 커버리지", e:"Condition Coverage. 개별 조건식의 T/F 모두 확인."},
+    {q:"1부터 2023까지 정수 중 4의 배수의 개수는?", a:"505", e:"2023 ÷ 4 = 505.75 → 505개."},
+    {q:"소프트웨어에 변조 검증 코드를 삽입하여 불법 수정을 방지하는 보안 기법의 명칭은?", a:"템퍼프루핑 (Tamper-Proofing)", e:"변조 방지 기법. 무결성 보장."},
+    {q:"C언어 스택 구조(LIFO) 동작 추적 결과의 출력값은?", a:"213465", e:"스택은 후입선출. push/pop 순서에 따라 출력 결정."},
+    {q:"DB 설계 5단계(구현 포함)를 순서대로 쓰시오.", a:"요구조건 분석 → 개념적 설계 → 논리적 설계 → 물리적 설계 → 구현", e:"요개논물 + 구현."},
+    {q:"디자인 패턴 분류: (1) 객체 인스턴스를 하나만 생성 - 생성 패턴 / (2) 객체 구조를 변경하지 않고 기능 추가 - 행위 패턴 (방문자)", a:"(1) Singleton  (2) Visitor", e:"싱글톤=생성, 비지터=행위."},
+    {q:"오류 검출·수정 관련 용어 빈칸: (1) 1비트 수정 (2) 전진 오류 수정 (3) 후진 오류 수정 (4) 1비트 검사 (5) 다항식 기반 검출", a:"(1) Hamming  (2) FEC  (3) BEC  (4) Parity  (5) CRC", e:"해밍=1비트 수정, FEC/BEC=계열, 패리티=1비트, CRC=다항식."},
+    {q:"HDLC 프레임 구분: (1) I / (2) S / (3) U / (4) ABM / (5) ARM", a:"(1) 정보  (2) 감독  (3) 비번호  (4) 비동기균형  (5) 비동기응답", e:"I=데이터, S=오류/흐름, U=링크 설정. ABM/ARM은 동작 모드."},
+    {q:"Java 문자열 비교: str1==str2 (리터럴), str1.equals(str3), str1==str3 (new String) 결과 4가지를 순서대로 쓰시오.", a:"true / false / true / true (예시)", e:"== 는 참조 비교, equals()는 내용 비교."},
+    {q:"암호화 알고리즘을 대칭키와 비대칭키로 분류: DES, AES, ARIA, SEED, RSA, ECC", a:"대칭키: DES, AES, ARIA, SEED / 비대칭키: RSA, ECC", e:"대칭키=블록 암호, 비대칭키=공개키/개인키."},
+    {q:"임의 크기 데이터를 고정 크기 값으로 변환하는 단방향 함수의 명칭은?", a:"해시 (Hash / Hashing)", e:"입력 크기와 무관하게 고정 길이 출력. MD5, SHA 등."},
+    {q:"DROP VIEW에서 해당 뷰를 참조하는 다른 뷰나 제약조건도 함께 삭제하는 옵션은?", a:"CASCADE", e:"CASCADE=연쇄 삭제 / RESTRICT=참조 시 삭제 금지."},
+    {q:"선택정렬로 오름차순 구현 시 가장 큰 값을 찾기 위해 사용하는 비교 연산자는?", a:">", e:"더 큰 값을 찾을 때는 '>' 사용."},
+    {q:"Python 문자열 슬라이싱: 'engineering' 에서 [0:3]+[6:8]+[10:] 결과는?", a:"engneing", e:"'eng' + 'in' + 'g' = 'engneing'."},
+    {q:"테스트 자동화 보조 모듈: (1) 하향식에서 하위 모듈 대체 / (2) 상향식에서 상위 모듈 대체", a:"(1) 스텁 (Stub)  (2) 드라이버 (Driver)", e:"스텁=하향식/하위 더미, 드라이버=상향식/상위 호출자."}
+  ],
+  "2023-3": [
+    {q:"Java 다형성: B 인스턴스에서 paint() 호출 → super.draw()(A의 draw)→B 출력→C 출력→this.draw()(B의 draw)→D, 이후 b.draw()→D. 최종 출력은?", a:"BDCDD", e:"다형성과 super 키워드의 조합 추적."},
+    {q:"사용자 자격증명을 공유하지 않고 타사 애플리케이션이 데이터에 접근할 수 있게 하는 개방형 표준 프로토콜은?", a:"OAuth", e:"Access Token 기반 권한 위임. 소셜 로그인 등에 사용."},
+    {q:"Linux에서 소유자 rwx, 그룹 rx, 기타 x 권한을 부여하는 명령어와 8진수 값은?", a:"chmod 751", e:"rwx=7, rx=5, x=1. chmod 751 파일명."},
+    {q:"완전수(Perfect Number): 자신을 제외한 약수의 합이 자신과 같은 수. 100 이하의 완전수(6, 28) 합은?", a:"34", e:"6 + 28 = 34. (1+2+3=6, 1+2+4+7+14=28)"},
+    {q:"구조체 포인터 변수에서 멤버에 접근할 때 사용하는 연산자 기호는?", a:"->  (화살표 연산자)", e:"p->멤버 = (*p).멤버 와 동일."},
+    {q:"T1={3,1,4}, T2={2,4,3}의 UNION 결과를 중복 제거 후 내림차순 정렬하면?", a:"4, 3, 2, 1", e:"UNION은 중복 제거. 합집합 {1,2,3,4}."},
+    {q:"접근통제 모델: (1) 등급 기반 강제 / (2) 역할 기반 / (3) 신분 기반 임의적", a:"(1) MAC  (2) RBAC  (3) DAC", e:"MAC=강제, RBAC=역할, DAC=임의."},
+    {q:"재귀 함수 f(n) = n * f(n-1), f(1)=1 일 때, f(7)의 값은?", a:"5040", e:"7! = 7×6×5×4×3×2×1 = 5040."},
+    {q:"고정 길이 53바이트 셀과 가상 채널 기반으로 다중화 전송하는 데이터 링크 계층 전송 기술은?", a:"ATM", e:"Asynchronous Transfer Mode. 53바이트 셀 단위."},
+    {q:"char *p = \"KOREA\" 일 때 printf(\"%s\\n%s\\n%c\\n%c\\n%c\", p, p+1, *p, *(p+4), *p+2) 결과는?", a:"KOREA / OREA / K / A / M", e:"문자열 포인터 연산. *p='K', *(p+4)='A', *p+2='K'+2='M' (예시에 따라 O)."},
+    {q:"Child 오버라이딩 compute(n): 조건에 따라 num-3을 재귀. compute(7)의 최종 값은?", a:"2", e:"7→4→1→... 규칙에 따라 최종 2 반환."},
+    {q:"공인 IP와 포트를 내부 사설 IP로 재기록하는 네트워크 기술의 약어는?", a:"NAT", e:"Network Address Translation. IPv4 주소 부족 해결."},
+    {q:"정적(static) 메서드에서 인스턴스 변수에 접근하는 코드가 오류가 나는 이유는? (어느 라인에서 에러 발생?)", a:"정적 메서드는 인스턴스 변수에 접근할 수 없음 (해당 return 라인 에러)", e:"static 메서드는 클래스 로딩 시 존재하므로 인스턴스 변수 접근 불가."},
+    {q:"Python input().split()에서 \"2 3\" 입력을 숫자 2개로 분리할 때 사용하는 메서드는?", a:"split", e:"문자열을 공백 기준으로 리스트로 분할."},
+    {q:"판매 관련 클래스들을 그룹화하여 표현하는 UML 정적 다이어그램은?", a:"패키지 다이어그램", e:"Package Diagram. 관련 요소를 폴더 단위로 그룹화."},
+    {q:"입력 데이터를 유효/무효 클래스로 분류해 각 클래스 내 값들이 동일하게 처리된다는 특성을 이용하는 블랙박스 테스트 기법은?", a:"동등 분할 (Equivalence Partitioning)", e:"분류된 그룹 내 값들이 동일하게 취급되는 특성 이용."},
+    {q:"클라우드 컴퓨팅 유형: (1) 인프라 제공 / (2) 플랫폼 제공 / (3) 소프트웨어 제공", a:"(1) IaaS  (2) PaaS  (3) SaaS", e:"I(인프라) → P(플랫폼) → S(소프트웨어) 순으로 추상화 레벨 증가."},
+    {q:"최소 Hop count 방식, Distance Vector, 최대 홉 15인 내부 라우팅 프로토콜은?", a:"RIP", e:"Routing Information Protocol. 벨만-포드 알고리즘."},
+    {q:"관계 대수 기호: (1) 조인 / (2) 프로젝트 / (3) 셀렉트 / (4) 디비전", a:"(1) ⋈  (2) π  (3) σ  (4) ÷", e:"순수 관계 연산자 4가지 기호 매칭."},
+    {q:"외래키와 기본키 간의 일관성을 보장하여 외래키는 참조 테이블의 기본키 값 또는 NULL 이어야 하는 무결성은?", a:"참조 무결성", e:"Referential Integrity. FOREIGN KEY 제약."}
+  ]
+};
+
+/* ============================================================
+   STATE
+============================================================ */
+const STORAGE_KEY = 'jcg_quiz_state_v3';
+let state = loadState();
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { answers: {}, pastAnswers: {} };
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+const PROB_META = {
+  past: { label: '❗ 기출', cls: 'bg-red' },
+  p99:  { label: '💯 99%', cls: 'bg-red' },
+  p80:  { label: '⭐ 80%', cls: 'bg-yellow' },
+  p50:  { label: '🔥 50%', cls: 'bg-blue' },
+  p20:  { label: '🤔 20%', cls: 'bg-gray' }
+};
+
+const subjects = Object.keys(quizData);
+const pastKeys = Object.keys(pastExamData); // "2025-1" ... "2024-3"
+
+let mode = 'quiz';         // 'quiz' | 'past' | 'review'
+let currentSubject = subjects[0];
+let probFilter = 'all';
+let currentYear = '2025';
+let currentRound = 'all';  // 'all' | '1' | '2' | '3'
+let reviewFilter = 'all';  // 'all' | 'correct' | 'wrong'
+let reviewSource = 'all';  // 'all' | 'quiz' | 'past'
+
+/* ============================================================
+   HELPERS
+============================================================ */
+function normalize(s) {
+  return (s || '').toString().toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/[.,()·\-'"'":;!?%&\[\]{}~～]/g, '');
+}
+function escapeHtml(s) {
+  return (s || '').toString().replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+// 정답 문자열을 괄호 밖 쉼표 기준으로 '항목'들로 분리
+function parseAnswerItems(correctAns) {
+  let depth = 0, current = '';
+  const items = [];
+  for (const ch of correctAns) {
+    if (ch === '(') depth++;
+    else if (ch === ')') depth = Math.max(0, depth - 1);
+    if ((ch === ',' || ch === '、') && depth === 0) {
+      if (current.trim()) items.push(current.trim());
+      current = '';
+    } else current += ch;
+  }
+  if (current.trim()) items.push(current.trim());
+  return items;
+}
+
+// 한 항목에서 허용 가능한 정답 형태들 추출
+// 예: "OUTER JOIN (외부 조인)" → {"outerjoin외부조인","outerjoin","외부조인"}
+// 예: "INTERSECT / 교집합" → {"intersect","교집합"}
+function getAcceptableForms(item) {
+  const forms = new Set();
+  const alternatives = item.split(/\s*\/\s*|\s*또는\s*/);
+  alternatives.forEach(alt => {
+    const t = alt.trim();
+    if (!t) return;
+    const full = normalize(t);
+    if (full) forms.add(full);
+    const noParens = t.replace(/\s*\([^)]*\)\s*/g, ' ').trim();
+    if (noParens) forms.add(normalize(noParens));
+    const matches = [...t.matchAll(/\(([^)]+)\)/g)];
+    matches.forEach(m => {
+      const inner = m[1].trim();
+      if (inner) forms.add(normalize(inner));
+    });
+  });
+  return forms;
+}
+
+// 단답형 채점
+// - 항목이 1개면 정확히 일치해야 정답. 답이 긴 구문이면 needConfirm=true 반환(수동 확정)
+// - 항목이 여러 개면 모든 항목이 사용자 답에 포함되어야 정답
+function checkAnswer(userAns, correctAns) {
+  const u = normalize(userAns);
+  if (!u) return { match: false, needConfirm: false };
+  const items = parseAnswerItems(correctAns);
+  if (items.length === 0) return { match: false, needConfirm: false };
+
+  if (items.length === 1) {
+    const forms = getAcceptableForms(items[0]);
+    for (const f of forms) if (u === f) return { match: true, needConfirm: false };
+    const maxLen = Math.max(0, ...[...forms].map(f => f.length));
+    if (maxLen > 20) return { match: false, needConfirm: true };
+    return { match: false, needConfirm: false };
+  }
+
+  const allMatched = items.every(item => {
+    const forms = getAcceptableForms(item);
+    for (const f of forms) if (f.length >= 1 && u.includes(f)) return true;
+    return false;
+  });
+  return { match: allMatched, needConfirm: false };
+}
+
+function quizKey(subject, idx) { return 'Q::' + subject + '::' + idx; }
+function pastKey(yr, idx) { return 'P::' + yr + '::' + idx; }
+
+/* ============================================================
+   NAV
+============================================================ */
+document.getElementById('navQuiz').onclick = () => { mode = 'quiz'; render(); };
+document.getElementById('navPast').onclick = () => { mode = 'past'; render(); };
+document.getElementById('navReview').onclick = () => { mode = 'review'; render(); };
+
+/* ============================================================
+   RENDER: QUESTION CARD
+============================================================ */
+function renderQuestionCard(container, opts) {
+  const { key, q, meta, badges } = opts;
+  const saved = state.answers[key] || state.pastAnswers[key];
+  const card = document.createElement('div');
+  card.className = 'q-card' + (saved ? (saved.correct ? ' is-correct' : ' is-wrong') : '');
+
+  const metaEl = document.createElement('div');
+  metaEl.className = 'q-meta';
+  let metaHtml = `<span class="q-num">${meta.numLabel}</span>`;
+  if (badges) badges.forEach(b => {
+    metaHtml += `<span class="badge ${b.cls}">${b.label}</span>`;
+  });
+  metaEl.innerHTML = metaHtml;
+  card.appendChild(metaEl);
+
+  const qText = document.createElement('div');
+  qText.className = 'q-text';
+  qText.textContent = q.q;
+  card.appendChild(qText);
+
+  const input = q.type === 'desc'
+    ? Object.assign(document.createElement('textarea'), { className: 'input' })
+    : Object.assign(document.createElement('input'), { className: 'input', type: 'text' });
+  input.placeholder = '답을 입력하세요';
+  if (saved) input.value = saved.userAnswer;
+  card.appendChild(input);
+
+  const actions = document.createElement('div');
+  actions.className = 'actions';
+  const submitBtn = Object.assign(document.createElement('button'), { className: 'btn btn-primary', textContent: '제출' });
+  const revealBtn = Object.assign(document.createElement('button'), { className: 'btn btn-secondary', textContent: '정답 보기' });
+  const resetBtn = Object.assign(document.createElement('button'), { className: 'btn btn-ghost', textContent: '다시 풀기' });
+  actions.appendChild(submitBtn);
+  actions.appendChild(revealBtn);
+  actions.appendChild(resetBtn);
+  card.appendChild(actions);
+
+  const result = document.createElement('div');
+  result.className = 'result';
+  card.appendChild(result);
+
+  function showResult(isCorrect, showStatus, userAnswer) {
+    result.classList.add('show');
+    result.classList.remove('r-correct', 'r-wrong');
+    const userBlock = userAnswer
+      ? `<div class="r-line"><strong>내 답변:</strong> ${escapeHtml(userAnswer)}</div>`
+      : '';
+    if (showStatus) {
+      result.classList.add(isCorrect ? 'r-correct' : 'r-wrong');
+      const toggleLabel = isCorrect ? '오답으로 수정' : '정답으로 수정';
+      result.innerHTML = `
+        <div class="r-status">${isCorrect ? '✓ 정답이에요' : '✗ 아쉬워요'}</div>
+        ${userBlock}
+        <div class="r-answer">${q.a}</div>
+        <div class="r-explain">${q.e}</div>
+        <div style="margin-top:10px;text-align:right;">
+          <button class="btn btn-ghost r-toggle" style="font-size:12px;padding:4px 10px;">${toggleLabel}</button>
+        </div>`;
+      const toggleBtn = result.querySelector('.r-toggle');
+      if (toggleBtn) toggleBtn.onclick = () => {
+        const stored = opts.store === 'past' ? state.pastAnswers[key] : state.answers[key];
+        if (!stored) return;
+        stored.correct = !stored.correct;
+        saveState();
+        showResult(stored.correct, true, stored.userAnswer);
+        updateStats();
+      };
+    } else {
+      result.innerHTML = `
+        <div class="r-status" style="color:var(--text-secondary)">정답</div>
+        <div class="r-answer">${q.a}</div>
+        <div class="r-explain">${q.e}</div>`;
+    }
+    card.classList.remove('is-correct', 'is-wrong');
+    if (showStatus) card.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
+  }
+
+  if (saved) showResult(saved.correct, true, saved.userAnswer);
+
+  submitBtn.onclick = () => {
+    const userAns = input.value.trim();
+    if (!userAns) { alert('답을 입력해주세요.'); return; }
+    const isDesc = q.type === 'desc';
+    let isCorrect;
+    if (isDesc) {
+      isCorrect = confirm(`서술형은 자동 채점이 어려워요.\n\n내 답변:\n${userAns}\n\n모범 답안:\n${q.a}\n\n맞다고 생각하면 [확인], 아니면 [취소]`);
+    } else {
+      const { match, needConfirm } = checkAnswer(userAns, q.a);
+      if (match) isCorrect = true;
+      else if (needConfirm) {
+        isCorrect = confirm(`답안이 길어 자동 채점이 어려워요.\n\n내 답변:\n${userAns}\n\n모범 답안:\n${q.a}\n\n맞다고 생각하면 [확인], 아니면 [취소]`);
+      } else isCorrect = false;
+    }
+    if (opts.store === 'past') state.pastAnswers[key] = { userAnswer: userAns, correct: isCorrect, year: opts.year, round: opts.round };
+    else state.answers[key] = { userAnswer: userAns, correct: isCorrect, subject: opts.subject };
+    saveState();
+    showResult(isCorrect, true, userAns);
+    updateStats();
+  };
+  revealBtn.onclick = () => showResult(false, false);
+  resetBtn.onclick = () => {
+    if (opts.store === 'past') delete state.pastAnswers[key];
+    else delete state.answers[key];
+    saveState();
+    input.value = '';
+    result.classList.remove('show', 'r-correct', 'r-wrong');
+    card.classList.remove('is-correct', 'is-wrong');
+    updateStats();
+  };
+
+  container.appendChild(card);
+}
+
+/* ============================================================
+   PAGE: QUIZ
+============================================================ */
+function renderQuizPage() {
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+
+  app.appendChild(statsBlock());
+
+  const pageHeader = document.createElement('div');
+  pageHeader.className = 'page-header';
+  pageHeader.innerHTML = `<div class="page-title">과목별 퀴즈</div>
+    <div class="page-sub">30문제씩, 단답형 및 서술형 · 정답과 풀이 포함</div>`;
+  app.appendChild(pageHeader);
+
+  const tabs = document.createElement('div');
+  tabs.className = 'tabs';
+  subjects.forEach(s => {
+    const t = document.createElement('button');
+    t.className = 'tab' + (currentSubject === s ? ' active' : '');
+    t.textContent = s;
+    t.onclick = () => { currentSubject = s; probFilter = 'all'; render(); };
+    tabs.appendChild(t);
+  });
+  app.appendChild(tabs);
+
+  const chips = document.createElement('div');
+  chips.className = 'chips';
+  const counts = { all: quizData[currentSubject].length };
+  Object.keys(PROB_META).forEach(k => counts[k] = 0);
+  quizData[currentSubject].forEach(q => counts[q.prob] = (counts[q.prob] || 0) + 1);
+
+  [['all', '전체'], ...Object.entries(PROB_META).map(([k, m]) => [k, m.label])]
+    .forEach(([key, label]) => {
+      const c = document.createElement('button');
+      c.className = 'chip' + (probFilter === key ? ' active' : '');
+      c.innerHTML = `${label}<span class="count">${counts[key] || 0}</span>`;
+      c.onclick = () => { probFilter = key; render(); };
+      chips.appendChild(c);
+    });
+  app.appendChild(chips);
+
+  const filtered = quizData[currentSubject]
+    .map((q, i) => ({ q, i }))
+    .filter(({ q }) => probFilter === 'all' || q.prob === probFilter);
+
+  if (filtered.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+    empty.textContent = '해당하는 문제가 없어요';
+    app.appendChild(empty);
+    return;
+  }
+  filtered.forEach(({ q, i }) => {
+    const m = PROB_META[q.prob] || { label: '', cls: 'bg-gray' };
+    renderQuestionCard(app, {
+      key: quizKey(currentSubject, i),
+      q, store: 'quiz', subject: currentSubject,
+      meta: { numLabel: `#${i + 1}` },
+      badges: [
+        { label: q.type === 'short' ? '단답형' : '서술형', cls: q.type === 'desc' ? 'bg-blue' : 'bg-gray' },
+        { label: m.label, cls: m.cls }
+      ]
+    });
+  });
+}
+
+/* ============================================================
+   PAGE: PAST EXAM
+============================================================ */
+function renderPastPage() {
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+
+  app.appendChild(statsBlock());
+
+  const pageHeader = document.createElement('div');
+  pageHeader.className = 'page-header';
+  pageHeader.innerHTML = `<div class="page-title">기출문제</div>
+    <div class="page-sub">연도와 회차를 선택해 풀어보세요</div>`;
+  app.appendChild(pageHeader);
+
+  const years = Array.from(new Set(pastKeys.map(k => k.split('-')[0]))).sort().reverse();
+  const yearTabs = document.createElement('div');
+  yearTabs.className = 'tabs';
+  years.forEach(yr => {
+    const t = document.createElement('button');
+    t.className = 'tab' + (currentYear === yr ? ' active' : '');
+    t.textContent = yr + '년';
+    t.onclick = () => { currentYear = yr; currentRound = 'all'; render(); };
+    yearTabs.appendChild(t);
+  });
+  app.appendChild(yearTabs);
+
+  const rounds = pastKeys.filter(k => k.startsWith(currentYear + '-')).map(k => k.split('-')[1]).sort();
+  const chips = document.createElement('div');
+  chips.className = 'chips';
+  const all = document.createElement('button');
+  all.className = 'chip' + (currentRound === 'all' ? ' active' : '');
+  const totalCount = rounds.reduce((sum, r) => sum + (pastExamData[currentYear + '-' + r]?.length || 0), 0);
+  all.innerHTML = `전체<span class="count">${totalCount}</span>`;
+  all.onclick = () => { currentRound = 'all'; render(); };
+  chips.appendChild(all);
+  rounds.forEach(r => {
+    const c = document.createElement('button');
+    c.className = 'chip' + (currentRound === r ? ' active' : '');
+    const n = pastExamData[currentYear + '-' + r]?.length || 0;
+    c.innerHTML = `${r}회<span class="count">${n}</span>`;
+    c.onclick = () => { currentRound = r; render(); };
+    chips.appendChild(c);
+  });
+  app.appendChild(chips);
+
+  const list = currentRound === 'all' ? rounds : [currentRound];
+  list.forEach(r => {
+    if (list.length > 1) {
+      const sh = document.createElement('div');
+      sh.className = 'sub-header';
+      sh.textContent = `${currentYear}년 ${r}회`;
+      app.appendChild(sh);
+    }
+    const yr = currentYear + '-' + r;
+    (pastExamData[yr] || []).forEach((q, i) => {
+      renderQuestionCard(app, {
+        key: pastKey(yr, i),
+        q: { ...q, type: 'short' },
+        store: 'past', year: yr, round: r,
+        meta: { numLabel: `${currentYear}년 ${r}회 · #${i + 1}` },
+        badges: [{ label: '기출', cls: 'bg-red' }]
+      });
+    });
+  });
+}
+
+/* ============================================================
+   PAGE: REVIEW
+============================================================ */
+function renderReviewPage() {
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+
+  app.appendChild(statsBlock());
+
+  const pageHeader = document.createElement('div');
+  pageHeader.className = 'page-header';
+  pageHeader.innerHTML = `<div class="page-title">복습</div>
+    <div class="page-sub">맞춘 문제와 틀린 문제를 모아 보세요</div>`;
+  app.appendChild(pageHeader);
+
+  const sourceChips = document.createElement('div');
+  sourceChips.className = 'chips';
+  [['all', '전체'], ['quiz', '퀴즈'], ['past', '기출']].forEach(([key, label]) => {
+    const c = document.createElement('button');
+    c.className = 'chip' + (reviewSource === key ? ' active' : '');
+    c.textContent = label;
+    c.onclick = () => { reviewSource = key; render(); };
+    sourceChips.appendChild(c);
+  });
+  app.appendChild(sourceChips);
+
+  const chips = document.createElement('div');
+  chips.className = 'chips';
+  [['all', '전체 푼 문제'], ['correct', '✓ 맞춘 문제'], ['wrong', '✗ 틀린 문제']].forEach(([key, label]) => {
+    const c = document.createElement('button');
+    c.className = 'chip' + (reviewFilter === key ? ' active' : '');
+    c.textContent = label;
+    c.onclick = () => { reviewFilter = key; render(); };
+    chips.appendChild(c);
+  });
+  app.appendChild(chips);
+
+  let count = 0;
+
+  if (reviewSource === 'all' || reviewSource === 'quiz') {
+    subjects.forEach(subject => {
+      quizData[subject].forEach((q, i) => {
+        const key = quizKey(subject, i);
+        const saved = state.answers[key];
+        if (!saved) return;
+        if (reviewFilter === 'correct' && !saved.correct) return;
+        if (reviewFilter === 'wrong' && saved.correct) return;
+        const m = PROB_META[q.prob] || { label: '', cls: 'bg-gray' };
+        renderQuestionCard(app, {
+          key, q, store: 'quiz', subject,
+          meta: { numLabel: `${subject} · #${i + 1}` },
+          badges: [
+            { label: q.type === 'short' ? '단답형' : '서술형', cls: q.type === 'desc' ? 'bg-blue' : 'bg-gray' },
+            { label: m.label, cls: m.cls }
+          ]
+        });
+        count++;
+      });
+    });
+  }
+
+  if (reviewSource === 'all' || reviewSource === 'past') {
+    pastKeys.forEach(yr => {
+      (pastExamData[yr] || []).forEach((q, i) => {
+        const key = pastKey(yr, i);
+        const saved = state.pastAnswers[key];
+        if (!saved) return;
+        if (reviewFilter === 'correct' && !saved.correct) return;
+        if (reviewFilter === 'wrong' && saved.correct) return;
+        const [y, r] = yr.split('-');
+        renderQuestionCard(app, {
+          key, q: { ...q, type: 'short' }, store: 'past', year: yr, round: r,
+          meta: { numLabel: `${y}년 ${r}회 · #${i + 1}` },
+          badges: [{ label: '기출', cls: 'bg-red' }]
+        });
+        count++;
+      });
+    });
+  }
+
+  if (count === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+    empty.textContent = reviewFilter === 'all'
+      ? '아직 푼 문제가 없어요'
+      : (reviewFilter === 'correct' ? '맞춘 문제가 아직 없어요' : '틀린 문제가 없어요');
+    app.appendChild(empty);
+  }
+}
+
+/* ============================================================
+   STATS BLOCK
+============================================================ */
+function statsBlock() {
+  let total = 0, solved = 0, correct = 0;
+  subjects.forEach(s => quizData[s].forEach((q, i) => {
+    total++;
+    const saved = state.answers[quizKey(s, i)];
+    if (saved) { solved++; if (saved.correct) correct++; }
+  }));
+  pastKeys.forEach(yr => (pastExamData[yr] || []).forEach((q, i) => {
+    total++;
+    const saved = state.pastAnswers[pastKey(yr, i)];
+    if (saved) { solved++; if (saved.correct) correct++; }
+  }));
+  const wrong = solved - correct;
+  const rate = solved > 0 ? Math.round((correct / solved) * 100) : 0;
+
+  const wrap = document.createElement('div');
+  wrap.className = 'stats-row';
+  wrap.innerHTML = `
+    <div class="stat-item"><div class="stat-label">전체 문제</div><div class="stat-value">${total}</div></div>
+    <div class="stat-item"><div class="stat-label">푼 문제</div><div class="stat-value">${solved}</div></div>
+    <div class="stat-item"><div class="stat-label">맞춘 문제</div><div class="stat-value v-correct">${correct}</div></div>
+    <div class="stat-item"><div class="stat-label">틀린 문제</div><div class="stat-value v-wrong">${wrong}</div></div>
+    <div class="stat-item">
+      <div class="stat-label">정답률</div>
+      <div class="stat-value">${rate}%</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${rate}%"></div></div>
+    </div>`;
+  return wrap;
+}
+function updateStats() {
+  // Re-render the stats row only by refreshing whole page (simple and safe)
+  render();
+}
+
+/* ============================================================
+   TOP NAV ACTIVE STATE
+============================================================ */
+function updateNavActive() {
+  ['navQuiz', 'navPast', 'navReview'].forEach(id => document.getElementById(id).classList.remove('active'));
+  if (mode === 'quiz') document.getElementById('navQuiz').classList.add('active');
+  else if (mode === 'past') document.getElementById('navPast').classList.add('active');
+  else document.getElementById('navReview').classList.add('active');
+}
+
+/* ============================================================
+   RENDER
+============================================================ */
+function render() {
+  updateNavActive();
+  if (mode === 'quiz') renderQuizPage();
+  else if (mode === 'past') renderPastPage();
+  else renderReviewPage();
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+render();
+</script>
+</body>
+</html>
